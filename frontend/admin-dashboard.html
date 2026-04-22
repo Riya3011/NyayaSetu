@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NyayaSetu | Admin Console</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --navy: #0a1628;
+      --navy-light: #152847;
+      --gold: #c9992a;
+      --gold2: #f0c040;
+      --danger: #ef4444;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --bg: #0f172a;
+      --card-bg: rgba(255, 255, 255, 0.03);
+      --border: rgba(255, 255, 255, 0.08);
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* ──── SIDEBAR ──── */
+    .sidebar {
+      width: 260px;
+      background: var(--navy);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      height: 100vh;
+      z-index: 100;
+      transition: width 0.3s;
+    }
+
+    .sidebar-header {
+      padding: 30px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      background: var(--gold);
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      color: var(--navy);
+      font-family: 'Playfair Display';
+      font-size: 20px;
+    }
+
+    .logo-text {
+      font-family: 'Playfair Display';
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .logo-text span { color: var(--gold2); }
+
+    .nav-list { list-style: none; padding: 0 16px; margin-top: 20px; flex: 1; }
+
+    .nav-item {
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text-muted);
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+    }
+
+    .nav-item.active {
+      background: rgba(201, 153, 42, 0.1);
+      color: var(--gold2);
+      border: 1px solid rgba(201, 153, 42, 0.2);
+    }
+
+    .sidebar-footer { padding: 24px; border-top: 1px solid var(--border); }
+
+    .btn-logout {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: 0.2s;
+    }
+
+    .btn-logout:hover { background: var(--danger); color: #fff; }
+
+    /* ──── CONTENT ──── */
+    .content {
+      flex: 1;
+      margin-left: 260px;
+      padding: 40px 60px;
+      max-width: 1400px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 48px;
+    }
+
+    .welcome-text h1 {
+      font-family: 'Playfair Display';
+      font-size: 36px;
+      margin-bottom: 8px;
+    }
+
+    .welcome-text p { color: var(--text-muted); font-size: 15px; }
+
+    .user-chip-wrap { display: flex; align-items: center; gap: 16px; }
+
+    /* ──── STATS ──── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px;
+      margin-bottom: 48px;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      backdrop-filter: blur(10px);
+    }
+
+    .stat-label { color: var(--text-muted); font-size: 14px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+    .stat-value { font-size: 32px; font-weight: 700; font-family: 'Playfair Display'; color: var(--gold2); }
+
+    /* ──── TABLES ──── */
+    .section-container {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 32px;
+      margin-bottom: 40px;
+      display: none; /* Controlled by JS */
+    }
+
+    .section-container.active { display: block; animation: fadeIn 0.4s ease; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    .section-header h2 { font-family: 'Playfair Display'; font-size: 24px; }
+
+    .controls { display: flex; gap: 16px; align-items: center; }
+
+    .search-input {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 16px;
+      color: #fff;
+      font-family: inherit;
+      width: 240px;
+      outline: none;
+    }
+
+    .search-input:focus { border-color: var(--gold); }
+
+    .data-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    .data-table th { text-align: left; padding: 16px; color: var(--text-muted); border-bottom: 1px solid var(--border); font-size: 13px; font-weight: 600; text-transform: uppercase; }
+    .data-table td { padding: 18px 16px; border-bottom: 1px solid var(--border); font-size: 14px; }
+    .data-table tr:hover { background: rgba(255, 255, 255, 0.02); }
+
+    .role-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .role-user { background: rgba(34, 197, 94, 0.1); color: #4ade80; }
+    .role-lawyer { background: rgba(59, 130, 246, 0.1); color: #60a5fa; }
+    .role-admin { background: rgba(239, 68, 68, 0.1); color: #f87171; }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .dot.active { background: var(--success); box-shadow: 0 0 8px var(--success); }
+    .dot.inactive { background: var(--danger); }
+
+    .priority-badge {
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .prio-high { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+    .prio-medium { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+    .prio-low { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+
+    .action-btn {
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: 0.2s;
+      margin-right: 4px;
+    }
+    .action-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; border-color: #fff; }
+    .action-btn.approve:hover { background: var(--success); color: #000; border-color: var(--success); }
+    .action-btn.reject:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+    /* ──── MODALS ──── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal {
+      background: var(--navy);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      width: 100%;
+      max-width: 600px;
+      padding: 40px;
+      box-shadow: 0 32px 64px rgba(0,0,0,0.5);
+    }
+
+    .modal-hd { margin-bottom: 24px; }
+    .modal-hd h3 { font-family: 'Playfair Display'; font-size: 28px; margin-bottom: 8px; }
+    .modal-hd p { color: var(--text-muted); font-size: 14px; }
+
+    .detail-row { margin-bottom: 20px; }
+    .detail-label { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 6px; }
+    .detail-value { font-size: 15px; line-height: 1.6; }
+
+    .modal-ft { display: flex; gap: 16px; margin-top: 32px; }
+    .btn-modal {
+      flex: 1;
+      padding: 14px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+    }
+    .btn-confirm { background: var(--gold); color: var(--navy); }
+    .btn-cancel { background: rgba(255, 255, 255, 0.05); color: #fff; }
+
+    /* ──── TOAST ──── */
+    .toast {
+      position: fixed;
+      bottom: 40px;
+      right: 40px;
+      background: var(--gold);
+      color: var(--navy);
+      padding: 16px 24px;
+      border-radius: 12px;
+      font-weight: 700;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 2000;
+    }
+    .toast.active { transform: translateY(0); opacity: 1; }
+
+    #loadingOverlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <script src="auth.js"></script>
+  <script>
+    if (!Auth.isLoggedIn()) window.location.href = 'login.html';
+    const user = Auth.getUser();
+    if (user.role !== 'admin') window.location.href = 'dashboard.html';
+  </script>
+
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-icon">N</div>
+      <div class="logo-text">Nyaya<span>Setu</span></div>
+    </div>
+    <ul class="nav-list">
+      <li class="nav-item active" onclick="switchSection('dashboard', this)">
+        <span>📊</span> Dashboard Overview
+      </li>
+      <li class="nav-item" onclick="switchSection('users', this)">
+        <span>👥</span> User Management
+      </li>
+      <li class="nav-item" onclick="switchSection('cases', this)">
+        <span>📋</span> Case Management
+      </li>
+      <li class="nav-item" onclick="window.location.href='nyayasetu.html'">
+        <span>🏠</span> Landing Page
+      </li>
+    </ul>
+    <div class="sidebar-footer">
+      <button class="btn-logout" onclick="Auth.logout()">
+        <span>🚪</span> Logout
+      </button>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div id="loadingOverlay">
+      <div class="spinner"></div>
+      <p style="color: var(--text-muted); font-size: 13px; letter-spacing: 2px; text-transform: uppercase;">Initializing Admin Console</p>
+    </div>
+
+    <header>
+      <div class="welcome-text">
+        <h1 id="pageTitle">Admin Overview</h1>
+        <p id="pageSubtitle">Real-time metrics and platform health monitoring.</p>
+      </div>
+      <div class="user-chip-wrap">
+        <div id="userChip"></div>
+      </div>
+    </header>
+
+    <!-- ── SECTION: DASHBOARD ── -->
+    <div id="section-dashboard" class="section-container active">
+      <div class="stats-row" id="statsRow">
+        <div class="stat-card">
+          <div class="stat-label">Total Users</div>
+          <div class="stat-value" id="stat-total-users">--</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Verified Lawyers</div>
+          <div class="stat-value" id="stat-lawyers">--</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Cases</div>
+          <div class="stat-value" id="stat-total-cases">--</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">High Priority</div>
+          <div class="stat-value" id="stat-high-prio" style="color: var(--danger);">--</div>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card" style="flex: 2;">
+          <div class="section-header">
+            <h3>Top Categories</h3>
+          </div>
+          <div id="categoryStats" style="display: flex; flex-direction: column; gap: 16px; margin-top: 20px;">
+            <!-- Categories injected here -->
+          </div>
+        </div>
+        <div class="stat-card" style="flex: 1;">
+          <div class="section-header">
+            <h3>System Status</h3>
+          </div>
+          <div style="margin-top: 20px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+              <span style="color: var(--text-muted);">Database</span>
+              <span style="color: var(--success); font-weight: 700;">CONNECTED</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+              <span style="color: var(--text-muted);">AI Engine</span>
+              <span style="color: var(--success); font-weight: 700;">ONLINE</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: var(--text-muted);">Server Latency</span>
+              <span style="color: var(--gold2); font-weight: 700;">24ms</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION: USERS ── -->
+    <div id="section-users" class="section-container">
+      <div class="section-header">
+        <h2>User Management</h2>
+        <div class="controls">
+          <input type="text" class="search-input" id="userSearch" placeholder="Search by name or email..." oninput="handleUserSearch()">
+          <button class="action-btn" onclick="loadUserData()">↻ Refresh</button>
+        </div>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Identity</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Joined</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="userTableBody">
+          <!-- User rows injected here -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ── SECTION: CASES ── -->
+    <div id="section-cases" class="section-container">
+      <div class="section-header">
+        <h2>Case Management</h2>
+        <div class="controls">
+          <select id="caseStatusFilter" class="search-input" style="width: 160px;" onchange="loadCaseData()">
+            <option value="">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="in_progress">In Progress</option>
+            <option value="resolved">Resolved</option>
+          </select>
+          <input type="text" class="search-input" id="caseSearch" placeholder="Search cases..." oninput="handleCaseSearch()">
+          <button class="action-btn" onclick="loadCaseData()">↻ Refresh</button>
+        </div>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Citizen</th>
+            <th>Category</th>
+            <th>Urgency</th>
+            <th>Status</th>
+            <th>Assigned Lawyer</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="caseTableBody">
+          <!-- Case rows injected here -->
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- ── MODALS ── -->
+  <div class="modal-overlay" id="caseDetailModal">
+    <div class="modal">
+      <div class="modal-hd">
+        <h3 id="modalCaseTitle">Case Details</h3>
+        <p id="modalCaseDate"></p>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Citizen Description</div>
+        <div class="detail-value" id="modalCaseDesc"></div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div class="detail-row">
+          <div class="detail-label">AI Classification</div>
+          <div class="detail-value" id="modalCaseCat"></div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Urgency Level</div>
+          <div class="detail-value" id="modalCaseUrgency"></div>
+        </div>
+      </div>
+      <div class="modal-ft">
+        <button class="btn-modal btn-cancel" onclick="closeModal('caseDetailModal')">Close</button>
+        <button class="btn-modal btn-confirm" id="btnAssignAction">Go to Assignment</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="assignModal">
+    <div class="modal">
+      <div class="modal-hd">
+        <h3>Assign Case</h3>
+        <p>Select a lawyer to handle this legal query.</p>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Choose Specialization</div>
+        <select id="assignLawyerSelect" class="search-input" style="width: 100%; height: 50px; background: rgba(0,0,0,0.2);">
+          <!-- Lawyers injected here -->
+        </select>
+      </div>
+      <div class="modal-ft">
+        <button class="btn-modal btn-cancel" onclick="closeModal('assignModal')">Cancel</button>
+        <button class="btn-modal btn-confirm" onclick="confirmAssignment()">Confirm Assignment</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Changes saved successfully</div>
+
+  <script>
+    // ── CONFIG ──
+    Auth.renderUserChip();
+    let currentSection = 'dashboard';
+    let allUsers = [];
+    let allCases = [];
+    let allLawyers = [];
+    let activeCaseId = null;
+
+    // ── INITIALIZATION ──
+    window.addEventListener('DOMContentLoaded', async () => {
+      await refreshAllData();
+      document.getElementById('loadingOverlay').style.display = 'none';
+      
+      // Check if there's a section in URL hash
+      const hash = window.location.hash.replace('#', '');
+      if (hash && ['dashboard', 'users', 'cases'].includes(hash)) {
+        const item = Array.from(document.querySelectorAll('.nav-item')).find(el => el.textContent.toLowerCase().includes(hash));
+        if (item) switchSection(hash, item);
+      }
+    });
+
+    async function refreshAllData() {
+      await Promise.all([
+        loadStats(),
+        loadUserData(),
+        loadCaseData()
+      ]);
+    }
+
+    // ── NAVIGATION ──
+    function switchSection(sectionId, el) {
+      document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+      el.classList.add('active');
+      
+      document.querySelectorAll('.section-container').forEach(sec => sec.classList.remove('active'));
+      document.getElementById(`section-${sectionId}`).classList.add('active');
+      
+      currentSection = sectionId;
+      window.location.hash = sectionId;
+      
+      const titles = {
+        'dashboard': { title: 'Admin Overview', sub: 'Real-time metrics and platform health monitoring.' },
+        'users': { title: 'User Management', sub: 'Control roles, monitor activity, and moderate accounts.' },
+        'cases': { title: 'Case Management', sub: 'Review AI classifications and distribute workload to lawyers.' }
+      };
+      
+      document.getElementById('pageTitle').textContent = titles[sectionId].title;
+      document.getElementById('pageSubtitle').textContent = titles[sectionId].sub;
+    }
+
+    // ── DATA LOADING ──
+    async function loadStats() {
+      try {
+        const res = await Auth.apiFetch('/admin/stats');
+        if (res.ok) {
+          const s = res.data.stats;
+          document.getElementById('stat-total-users').textContent = s.users.total;
+          document.getElementById('stat-lawyers').textContent = s.users.lawyers;
+          document.getElementById('stat-total-cases').textContent = s.queries.total;
+          document.getElementById('stat-high-prio').textContent = s.queries.highUrgency;
+
+          const catDiv = document.getElementById('categoryStats');
+          catDiv.innerHTML = s.topCategories.map(c => `
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="flex: 1; font-size: 14px;">${c.category || 'Unclassified'}</div>
+              <div style="width: 200px; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden;">
+                <div style="width: ${(c.count / s.queries.total * 100) || 0}%; height: 100%; background: var(--gold2);"></div>
+              </div>
+              <div style="width: 30px; text-align: right; font-weight: 700; font-size: 13px;">${c.count}</div>
+            </div>
+          `).join('');
+        }
+      } catch (err) {
+        showToast('Failed to load stats', true);
+      }
+    }
+
+    async function loadUserData() {
+      try {
+        const res = await Auth.apiFetch('/admin/users?limit=100');
+        if (res.ok) {
+          allUsers = res.data.users;
+          allLawyers = allUsers.filter(u => u.role === 'lawyer');
+          renderUserTable(allUsers);
+        }
+      } catch (err) {
+        showToast('User fetch error', true);
+      }
+    }
+
+    async function loadCaseData() {
+      try {
+        const status = document.getElementById('caseStatusFilter').value;
+        const res = await Auth.apiFetch(`/admin/queries?${status ? `status=${status}` : ''}`);
+        if (res.ok) {
+          allCases = res.data.queries;
+          renderCaseTable(allCases);
+        }
+      } catch (err) {
+        showToast('Case fetch error', true);
+      }
+    }
+
+    // ── RENDERING ──
+    function renderUserTable(users) {
+      const tbody = document.getElementById('userTableBody');
+      tbody.innerHTML = users.map(u => `
+        <tr>
+          <td>
+            <div style="font-weight: 700; color: #fff;">${u.name}</div>
+            <div style="font-size: 12px; color: var(--text-muted);">${u.email}</div>
+          </td>
+          <td><span class="role-badge role-${u.role}">${u.role}</span></td>
+          <td>
+            <div class="status-badge">
+              <div class="dot ${u.isActive ? 'active' : 'inactive'}"></div>
+              ${u.isActive ? 'Active' : 'Deactivated'}
+            </div>
+          </td>
+          <td style="color: var(--text-muted); font-size: 13px;">${new Date(u.createdAt).toLocaleDateString()}</td>
+          <td>
+            ${u.role === 'lawyer' ? 
+              `<button class="action-btn approve" title="${u.isActive ? 'Deactivate' : 'Approve'}" onclick="toggleUserStatus('${u._id}', ${!u.isActive})">
+                ${u.isActive ? '🚫' : '✅'}
+              </button>` : ''
+            }
+            <button class="action-btn" title="Delete" onclick="deleteUser('${u._id}', '${u.name}')">🗑️</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderCaseTable(cases) {
+      const tbody = document.getElementById('caseTableBody');
+      tbody.innerHTML = cases.map(c => `
+        <tr>
+          <td>
+            <div style="font-weight: 600;">${c.user_id?.name || 'Anonymous'}</div>
+            <div style="font-size: 11px; color: var(--text-muted); display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 180px;">${c.user_input}</div>
+          </td>
+          <td><span class="priority-badge" style="background: rgba(255,255,255,0.05); color: var(--gold2);">${c.detected_category || 'TBD'}</span></td>
+          <td><span class="priority-badge prio-${c.urgency_level || 'low'}">${(c.urgency_level || 'LOW').toUpperCase()}</span></td>
+          <td><span style="font-size: 13px; font-weight: 600; text-transform: capitalize;">${(c.status || 'pending').replace('_', ' ')}</span></td>
+          <td style="color: var(--gold2);">⚖️ ${c.lawyer_id?.name || '<em style="color:var(--text-muted)">Unassigned</em>'}</td>
+          <td>
+            <button class="action-btn" onclick="viewCaseDetail('${c._id}')">👁️ View</button>
+            <button class="action-btn" onclick="openAssignModal('${c._id}')">👤 Assign</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // ── ACTIONS ──
+    async function toggleUserStatus(id, isActive) {
+      const res = await Auth.apiFetch(`/admin/users/${id}/status`, {
+        method: 'PUT',
+        body: JSON.stringify({ isActive })
+      });
+      if (res.ok) {
+        showToast(`User ${isActive ? 'activated' : 'deactivated'}`);
+        loadUserData();
+        loadStats();
+      }
+    }
+
+    async function deleteUser(id, name) {
+      if (!confirm(`Are you sure you want to PERMANENTLY delete ${name}?`)) return;
+      const res = await Auth.apiFetch(`/admin/users/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        showToast('User deleted successfully');
+        loadUserData();
+        loadStats();
+      }
+    }
+
+    function viewCaseDetail(id) {
+      const c = allCases.find(x => x._id === id);
+      if (!c) return;
+      activeCaseId = id;
+      document.getElementById('modalCaseTitle').textContent = `Query by ${c.user_id?.name || 'Anonymous'}`;
+      document.getElementById('modalCaseDate').textContent = `Submitted on ${new Date(c.createdAt).toLocaleString()}`;
+      document.getElementById('modalCaseDesc').textContent = c.user_input;
+      document.getElementById('modalCaseCat').textContent = c.detected_category || 'Unclassified';
+      document.getElementById('modalCaseUrgency').textContent = (c.urgency_level || 'low').toUpperCase();
+      
+      document.getElementById('btnAssignAction').onclick = () => {
+        closeModal('caseDetailModal');
+        openAssignModal(id);
+      };
+      
+      document.getElementById('caseDetailModal').classList.add('active');
+    }
+
+    function openAssignModal(id) {
+      activeCaseId = id;
+      const select = document.getElementById('assignLawyerSelect');
+      select.innerHTML = '<option value="">— Select a Lawyer —</option>' + 
+        allLawyers.map(l => `<option value="${l._id}">${l.name} (${l.specialization || 'General'})</option>`).join('');
+      
+      document.getElementById('assignModal').classList.add('active');
+    }
+
+    async function confirmAssignment() {
+      const lawyerId = document.getElementById('assignLawyerSelect').value;
+      if (!lawyerId) { showToast('Please select a lawyer', true); return; }
+      
+      const res = await Auth.apiFetch(`/admin/queries/${activeCaseId}/assign`, {
+        method: 'PUT',
+        body: JSON.stringify({ lawyer_id: lawyerId })
+      });
+      
+      if (res.ok) {
+        showToast('Lawyer assigned successfully');
+        closeModal('assignModal');
+        loadCaseData();
+        loadStats();
+      }
+    }
+
+    // ── SEARCH ──
+    function handleUserSearch() {
+      const term = document.getElementById('userSearch').value.toLowerCase();
+      const filtered = allUsers.filter(u => u.name.toLowerCase().includes(term) || u.email.toLowerCase().includes(term));
+      renderUserTable(filtered);
+    }
+
+    function handleCaseSearch() {
+      const term = document.getElementById('caseSearch').value.toLowerCase();
+      const filtered = allCases.filter(c => 
+        (c.user_id?.name || '').toLowerCase().includes(term) || 
+        (c.user_input || '').toLowerCase().includes(term)
+      );
+      renderCaseTable(filtered);
+    }
+
+    // ── UTILS ──
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+
+    function showToast(msg, isError = false) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.background = isError ? 'var(--danger)' : 'var(--gold)';
+      t.style.color = isError ? '#fff' : 'var(--navy)';
+      t.classList.add('active');
+      setTimeout(() => t.classList.remove('active'), 3000);
+    }
+  </script>
+</body>
+</html>

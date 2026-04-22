@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NyayaSetu — Login / Sign Up</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --navy:#0a1628;--gold:#c9992a;--gold2:#f0c040;
+  --red:#d62828;--green:#1a7f37;
+}
+html,body{min-height:100%;font-family:'Outfit',sans-serif;}
+body{
+  background:var(--navy);
+  background-image:
+    radial-gradient(ellipse 80% 60% at 70% 40%,rgba(201,153,42,0.08) 0%,transparent 65%),
+    radial-gradient(ellipse 50% 50% at 20% 70%,rgba(14,31,58,0.9) 0%,transparent 70%);
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;padding:24px;
+}
+
+.card{
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(201,153,42,0.18);
+  border-radius:22px;padding:48px 44px;
+  width:100%;max-width:460px;
+  backdrop-filter:blur(14px);
+  box-shadow:0 28px 72px rgba(0,0,0,0.5);
+}
+
+/* Logo */
+.logo{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:32px;}
+.logo-icon{width:44px;height:44px;background:var(--gold);border-radius:10px;
+  display:grid;place-items:center;font-size:20px;font-weight:700;
+  color:var(--navy);font-family:'Playfair Display';}
+.logo-text{font-family:'Playfair Display';font-size:1.6rem;font-weight:700;color:#fff;}
+.logo-text span{color:var(--gold2);}
+
+/* Tabs */
+.tabs{display:flex;background:rgba(255,255,255,0.06);border-radius:10px;padding:4px;margin-bottom:26px;}
+.tab-btn{flex:1;padding:9px;border:none;background:transparent;
+  color:rgba(255,255,255,0.5);font-size:14px;font-weight:500;
+  cursor:pointer;border-radius:8px;transition:all 0.2s;font-family:'Outfit',sans-serif;}
+.tab-btn.active{background:var(--gold);color:var(--navy);font-weight:700;}
+
+/* Form title */
+.form-title{font-family:'Playfair Display';font-size:22px;color:#fff;margin-bottom:5px;}
+.form-sub{font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:22px;}
+
+/* Fields */
+.field{margin-bottom:16px;}
+label{display:block;font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:6px;font-weight:500;}
+input, select{
+  width:100%;padding:12px 14px;
+  background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:10px;color:#fff;font-size:14px;
+  font-family:'Outfit',sans-serif;outline:none;
+  transition:border-color 0.2s,background 0.2s;
+  appearance:none;-webkit-appearance:none;
+}
+input::placeholder{color:rgba(255,255,255,0.28);}
+input:focus,select:focus{border-color:rgba(201,153,42,0.55);background:rgba(255,255,255,0.1);}
+select option{background:#0e1f3a;color:#fff;}
+
+/* Role selector label */
+.role-label{
+  display:block;font-size:12px;color:rgba(255,255,255,0.4);
+  margin-top:4px;line-height:1.4;
+}
+
+/* Message */
+.msg{border-radius:8px;padding:11px 14px;font-size:13px;margin-bottom:16px;display:none;}
+.msg.error{background:rgba(214,40,40,0.18);border:1px solid rgba(214,40,40,0.35);color:#ff8888;}
+.msg.success{background:rgba(26,127,55,0.18);border:1px solid rgba(26,127,55,0.35);color:#6dde8e;}
+.msg.visible{display:block;}
+
+/* Submit */
+.submit-btn{
+  width:100%;padding:13px;background:var(--gold);color:var(--navy);
+  border:none;border-radius:10px;font-size:15px;font-weight:700;
+  cursor:pointer;font-family:'Outfit',sans-serif;
+  transition:transform 0.15s,box-shadow 0.15s,opacity 0.15s;
+  margin-top:6px;
+}
+.submit-btn:hover{transform:translateY(-1px);box-shadow:0 8px 26px rgba(201,153,42,0.45);}
+.submit-btn:disabled{opacity:0.6;transform:none;cursor:not-allowed;}
+
+/* Spinner */
+.spin{display:inline-block;width:15px;height:15px;border:2px solid rgba(10,22,40,0.3);
+  border-top-color:var(--navy);border-radius:50%;animation:spin 0.7s linear infinite;
+  vertical-align:middle;margin-right:6px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* Role hint badges */
+.role-badges{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.rbadge{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:default;}
+.rbadge.user{background:rgba(39,174,96,0.2);color:#6dde8e;border:1px solid rgba(39,174,96,0.3);}
+.rbadge.lawyer{background:rgba(41,128,185,0.2);color:#74b9e8;border:1px solid rgba(41,128,185,0.3);}
+.rbadge.admin{background:rgba(214,40,40,0.2);color:#ff8888;border:1px solid rgba(214,40,40,0.3);}
+
+.footer-note{text-align:center;margin-top:22px;font-size:12px;color:rgba(255,255,255,0.28);}
+.divider{border:none;border-top:1px solid rgba(255,255,255,0.08);margin:20px 0;}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo">
+    <div class="logo-icon">N</div>
+    <div class="logo-text">Nyaya<span>Setu</span></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tabLogin"  onclick="switchTab('login')">Login</button>
+    <button class="tab-btn"        id="tabSignup" onclick="switchTab('signup')">Sign Up</button>
+  </div>
+
+  <div class="msg" id="msgBanner"></div>
+
+  <!-- ── LOGIN FORM ── -->
+  <div id="loginSection">
+    <h2 class="form-title">Welcome back</h2>
+    <p class="form-sub">Sign in to your NyayaSetu account</p>
+
+    <form id="loginForm" onsubmit="handleLogin(event)" novalidate>
+      <div class="field">
+        <label for="loginEmail">Email address</label>
+        <input type="email" id="loginEmail" placeholder="you@example.com" required autocomplete="email"/>
+      </div>
+      <div class="field">
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" required autocomplete="current-password"/>
+      </div>
+      <div class="field">
+        <label for="loginRole">Login as</label>
+        <select id="loginRole" required>
+          <option value="" disabled selected>— Select your role —</option>
+          <option value="user">👤 User (Citizen)</option>
+          <option value="lawyer">⚖️ Lawyer</option>
+          <option value="admin">🔐 Administrator</option>
+        </select>
+        <span class="role-label">
+          Must match your account role. Wrong role → login will be rejected.
+        </span>
+      </div>
+      <button type="submit" class="submit-btn" id="loginBtn">Sign In</button>
+    </form>
+
+    <div class="role-badges" style="margin-top:14px;">
+      <span class="rbadge user">User → Dashboard</span>
+      <span class="rbadge lawyer">Lawyer → Lawyer Portal</span>
+      <span class="rbadge admin">Admin → Admin Console</span>
+    </div>
+  </div>
+
+  <!-- ── SIGNUP FORM ── -->
+  <div id="signupSection" style="display:none;">
+    <h2 class="form-title">Create an account</h2>
+    <p class="form-sub">Choose your role and register to access the platform.</p>
+
+    <form id="signupForm" onsubmit="handleSignup(event)" novalidate>
+      <div class="field">
+        <label for="signupName">Full name</label>
+        <input type="text" id="signupName" placeholder="Ravi Kumar" required autocomplete="name"/>
+      </div>
+      <div class="field">
+        <label for="signupEmail">Email address</label>
+        <input type="email" id="signupEmail" placeholder="you@example.com" required autocomplete="email"/>
+      </div>
+      <div class="field">
+        <label for="signupPassword">Password <span style="color:rgba(255,255,255,0.28);font-weight:400;">(min 6 characters)</span></label>
+        <input type="password" id="signupPassword" placeholder="••••••••" required autocomplete="new-password"/>
+      </div>
+      <div class="field">
+        <label for="signupConfirm">Confirm password</label>
+        <input type="password" id="signupConfirm" placeholder="••••••••" required autocomplete="new-password"/>
+      </div>
+      <div class="field">
+        <label for="signupRole">Register as</label>
+        <select id="signupRole" required>
+          <option value="" disabled selected>— I am registering as —</option>
+          <option value="user">👤 Citizen (seeking legal help)</option>
+          <option value="lawyer">⚖️ Lawyer (legal professional)</option>
+        </select>
+      </div>
+      <!-- Lawyer extra fields (shown only when Lawyer is selected) -->
+      <div id="lawyerFields" style="display:none;">
+        <div class="field">
+          <label for="signupSpecialization">Specialization</label>
+          <select id="signupSpecialization">
+            <option value="">— Select specialization —</option>
+            <option>Criminal Law</option>
+            <option>Family Law</option>
+            <option>Property Law</option>
+            <option>Labour Law</option>
+            <option>Corporate Law</option>
+            <option>Consumer Law</option>
+            <option>Cyber Law</option>
+            <option>Civil Law</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="signupBarCouncil">Bar Council ID</label>
+          <input type="text" id="signupBarCouncil" placeholder="MAH/1234/2020"/>
+        </div>
+        <div class="field">
+          <label for="signupExperience">Years of Experience</label>
+          <input type="number" id="signupExperience" placeholder="5" min="0" max="60"/>
+        </div>
+      </div>
+      <button type="submit" class="submit-btn" id="signupBtn">Create Account</button>
+    </form>
+  </div>
+
+  <p class="footer-note">NyayaSetu · Digital Legal Assistance Portal · MIT-WPU</p>
+</div>
+
+<script src="auth.js"></script>
+<script>
+Auth.redirectIfLoggedIn();
+
+function switchTab(tab) {
+  clearMsg();
+  const isLogin = tab === 'login';
+  document.getElementById('loginSection').style.display  = isLogin ? '' : 'none';
+  document.getElementById('signupSection').style.display = isLogin ? 'none' : '';
+  document.getElementById('tabLogin').classList.toggle('active', isLogin);
+  document.getElementById('tabSignup').classList.toggle('active', !isLogin);
+}
+
+function showMsg(text, type='error') {
+  const el = document.getElementById('msgBanner');
+  el.textContent = text;
+  el.className   = `msg ${type} visible`;
+}
+function clearMsg() {
+  const el = document.getElementById('msgBanner');
+  el.className = 'msg';
+  el.textContent = '';
+}
+
+// ── LOGIN ──────────────────────────────────────────────────────────────────────
+async function handleLogin(e) {
+  e.preventDefault();
+  clearMsg();
+
+  const email    = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const role     = document.getElementById('loginRole').value;
+  const btn      = document.getElementById('loginBtn');
+
+  if (!email || !password) { showMsg('Please enter your email and password.'); return; }
+  if (!role)               { showMsg('Please select your role before signing in.'); return; }
+
+  btn.disabled  = true;
+  btn.innerHTML = '<span class="spin"></span>Signing in…';
+
+  try {
+    // Auth.login now sends role to backend — backend enforces role match
+    const result = await Auth.login(email, password, role);
+
+    if (result.success) {
+      showMsg('Login successful! Redirecting…', 'success');
+      setTimeout(() => Auth.redirectByRole(result.user.role), 700);
+    } else {
+      // Surface the exact backend error — includes "Invalid role selected"
+      showMsg(result.message || 'Login failed. Please try again.');
+      btn.disabled    = false;
+      btn.textContent = 'Sign In';
+    }
+  } catch (err) {
+    showMsg('Network error. Is the server running on port 5050?');
+    btn.disabled    = false;
+    btn.textContent = 'Sign In';
+  }
+}
+
+// ── Show/hide lawyer fields based on role selection ────────────────────────────
+document.getElementById('signupRole').addEventListener('change', function() {
+  document.getElementById('lawyerFields').style.display = this.value === 'lawyer' ? '' : 'none';
+});
+
+// ── SIGNUP ─────────────────────────────────────────────────────────────────────
+async function handleSignup(e) {
+  e.preventDefault();
+  clearMsg();
+
+  const name     = document.getElementById('signupName').value.trim();
+  const email    = document.getElementById('signupEmail').value.trim();
+  const password = document.getElementById('signupPassword').value;
+  const confirm  = document.getElementById('signupConfirm').value;
+  const role     = document.getElementById('signupRole').value;
+  const btn      = document.getElementById('signupBtn');
+
+  if (!name || !email || !password || !confirm) { showMsg('All fields are required.'); return; }
+  if (!role) { showMsg('Please select a role.'); return; }
+  if (password.length < 6) { showMsg('Password must be at least 6 characters.'); return; }
+  if (password !== confirm)  { showMsg('Passwords do not match.'); return; }
+
+  // Collect lawyer extra fields
+  const specialization = document.getElementById('signupSpecialization')?.value || '';
+  const barCouncilId   = document.getElementById('signupBarCouncil')?.value.trim() || '';
+  const experience     = parseInt(document.getElementById('signupExperience')?.value) || 0;
+
+  btn.disabled  = true;
+  btn.innerHTML = '<span class="spin"></span>Creating account…';
+
+  try {
+    // Clear any old session first to prevent redirect to wrong account
+    localStorage.removeItem('ns_token');
+    localStorage.removeItem('ns_user');
+
+    const res = await fetch('http://localhost:5050/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password, role, specialization, barCouncilId, experience }),
+    });
+    const result = await res.json();
+
+    if (result.success) {
+      localStorage.setItem('ns_token', result.token);
+      localStorage.setItem('ns_user',  JSON.stringify(result.user));
+      showMsg('Account created! Redirecting…', 'success');
+      setTimeout(() => Auth.redirectByRole(result.user.role), 800);
+    } else {
+      showMsg(result.message || 'Registration failed.');
+      btn.disabled    = false;
+      btn.textContent = 'Create Account';
+    }
+  } catch (err) {
+    showMsg('Network error. Is the server running on port 5050?');
+    btn.disabled    = false;
+    btn.textContent = 'Create Account';
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Upload a legal document for AI-powered risk analysis. NyayaSetu detects risky clauses, penalty terms, and gives practical advice.">
+<title>NyayaSetu | Document Risk Analyzer</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="chatbot.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;}
+:root {
+  --navy:#0a1628;--navy2:#0e1f3a;
+  --gold:#c9992a;--gold2:#f0c040;
+  --cream:#f5f0e8;--cream2:#ede6d8;
+  --text:#1a2540;--muted:#6b7a99;
+  --white:#ffffff;--border:rgba(201,153,42,0.2);
+  --red:#dc2626;--green:#1a7f37;--amber:#b78103;
+  --risk-high:#c0392b;--risk-medium:#b78103;--risk-low:#1a7f37;
+}
+html{scroll-behavior:smooth;}
+body{margin:0;font-family:'Outfit',sans-serif;background:var(--cream);color:var(--text);}
+
+/* ── NAV ── */
+nav{
+  background:var(--navy);padding:1rem 3.5rem;
+  display:flex;justify-content:space-between;align-items:center;
+  position:sticky;top:0;z-index:100;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.logo{display:flex;align-items:center;gap:10px;color:white;text-decoration:none;}
+.logo-icon{background:var(--gold);width:36px;height:36px;border-radius:8px;display:grid;place-items:center;font-weight:700;font-family:'Playfair Display';font-size:1rem;color:var(--navy);}
+.logo-text{font-family:'Playfair Display';font-size:1.2rem;color:var(--white);}
+.logo-text span{color:var(--gold2);}
+.nav-links{display:flex;gap:1.6rem;list-style:none;margin:0;padding:0;}
+.nav-links a{color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.875rem;transition:color 0.2s;}
+.nav-links a:hover,.nav-links a.active{color:var(--gold2);}
+@media(max-width:768px){.nav-links{display:none;}nav{padding:1rem 1.5rem;}}
+
+/* ── PAGE HEADER ── */
+.page-header{
+  background:linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
+  color:white;padding:5rem 3.5rem 4rem;text-align:center;
+  position:relative;overflow:hidden;
+}
+.page-header::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 80% at 50% 0%,rgba(201,153,42,0.1) 0%,transparent 70%);
+}
+.page-header h1{font-family:'Playfair Display';font-size:clamp(2rem,4vw,2.8rem);margin:0 0 0.75rem;position:relative;}
+.page-header p{color:rgba(255,255,255,0.55);margin:0;font-size:1rem;position:relative;}
+
+/* ── LAYOUT ── */
+.container{max-width:820px;margin:0 auto;padding:3rem 1.5rem 5rem;}
+.card{background:var(--white);padding:2.5rem;border-radius:20px;border:1px solid var(--cream2);box-shadow:0 8px 32px rgba(10,22,40,0.07);}
+
+/* ── UPLOAD ZONE ── */
+.upload-zone{
+  border:2px dashed rgba(201,153,42,0.35);
+  padding:3rem 2rem;border-radius:14px;text-align:center;
+  cursor:pointer;transition:border-color 0.25s,background 0.25s,transform 0.2s;
+  position:relative;background:#fffefb;
+}
+.upload-zone:hover,.upload-zone.drag-over{
+  border-color:var(--gold);background:rgba(201,153,42,0.04);
+  transform:scale(1.01);
+}
+.upload-zone.drag-over{border-style:solid;}
+.upload-zone input{display:none;}
+.upload-icon{font-size:2.8rem;margin-bottom:0.7rem;display:block;}
+.upload-label{font-size:1rem;font-weight:600;color:var(--text);margin-bottom:0.3rem;}
+.upload-hint{font-size:0.82rem;color:var(--muted);}
+.file-info{
+  margin-top:1rem;font-size:0.875rem;font-weight:600;color:var(--gold);
+  display:none;align-items:center;gap:0.5rem;justify-content:center;
+}
+.file-info.visible{display:flex;}
+.file-size-warn{
+  font-size:0.78rem;color:var(--amber);font-weight:400;margin-top:0.25rem;display:none;
+}
+
+/* ── QUERY LINKER ── */
+.query-linker{
+  margin-top:1.5rem;background:#f9f8f6;border-radius:12px;
+  padding:1.1rem 1.3rem;border:1px solid var(--cream2);display:none;
+}
+.query-linker label{font-size:0.85rem;font-weight:500;color:var(--muted);display:block;margin-bottom:0.55rem;}
+.query-linker select{
+  width:100%;padding:0.6rem 0.8rem;border-radius:8px;
+  border:1.5px solid rgba(201,153,42,0.25);font-family:'Outfit';font-size:0.88rem;
+  background:var(--white);color:var(--text);outline:none;
+  transition:border-color 0.2s;
+}
+.query-linker select:focus{border-color:var(--gold);}
+
+/* ── ANALYZE BUTTON ── */
+.analyze-btn{
+  display:inline-flex;align-items:center;gap:0.6rem;
+  margin-top:1.5rem;padding:0.85rem 2rem;
+  background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);
+  color:var(--gold2);border:1px solid rgba(201,153,42,0.3);border-radius:10px;
+  font-weight:700;font-size:0.95rem;cursor:pointer;font-family:'Outfit';
+  box-shadow:0 6px 20px rgba(10,22,40,0.2);
+  transition:transform 0.18s,box-shadow 0.2s,filter 0.18s;
+}
+.analyze-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 28px rgba(10,22,40,0.28);filter:brightness(1.08);}
+.analyze-btn:active:not(:disabled){transform:translateY(0);}
+.analyze-btn:disabled{opacity:0.5;cursor:not-allowed;}
+
+/* Spinner inside button */
+.btn-spinner{
+  width:16px;height:16px;border:2px solid rgba(240,192,64,0.3);
+  border-top-color:var(--gold2);border-radius:50%;
+  animation:spin 0.7s linear infinite;display:none;
+}
+.analyze-btn.loading .btn-spinner{display:block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── PROGRESS BAR ── */
+.progress-bar-wrap{
+  margin-top:1rem;height:4px;background:#e5e7eb;border-radius:4px;overflow:hidden;display:none;
+}
+.progress-bar-wrap.visible{display:block;}
+.progress-bar{
+  height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));
+  width:0%;border-radius:4px;transition:width 0.4s ease;
+}
+
+/* ── ERROR BANNER ── */
+.error-banner{
+  margin-top:1rem;background:#fef2f2;border:1px solid #fecaca;
+  border-left:4px solid var(--red);border-radius:10px;padding:0.9rem 1.1rem;
+  font-size:0.875rem;color:#991b1b;display:none;align-items:center;gap:0.7rem;
+  animation:fadeIn 0.2s ease;
+}
+.error-banner.visible{display:flex;}
+.error-retry-btn{
+  margin-left:auto;padding:0.35rem 0.9rem;border-radius:7px;
+  background:var(--white);border:1px solid #fecaca;color:#991b1b;
+  font-size:0.8rem;font-weight:600;cursor:pointer;white-space:nowrap;
+  font-family:'Outfit';transition:background 0.18s;
+}
+.error-retry-btn:hover{background:#fef2f2;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── RISK BANNER ── */
+.risk-banner{
+  margin-top:1.8rem;border-radius:14px;padding:1.2rem 1.5rem;
+  display:none;align-items:center;gap:1.2rem;animation:fadeIn 0.35s ease;
+}
+.risk-banner.visible{display:flex;}
+.risk-banner.high  {background:#fef2f2;border:1px solid #fecaca;}
+.risk-banner.medium{background:#fffbeb;border:1px solid #fde68a;}
+.risk-banner.low   {background:#f0fdf4;border:1px solid #86efac;}
+.risk-icon{font-size:2.2rem;flex-shrink:0;}
+.risk-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700;opacity:.65;}
+.risk-title{font-size:1.25rem;font-weight:700;margin:0.15rem 0;}
+.risk-sub{font-size:0.85rem;opacity:.75;}
+
+/* ── SECTIONS ── */
+.result-section{margin-top:1.8rem;display:none;animation:fadeIn 0.3s ease;}
+.result-section.visible{display:block;}
+.section-title{
+  font-weight:700;font-size:0.82rem;color:var(--text);
+  text-transform:uppercase;letter-spacing:.08em;
+  margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;
+}
+
+/* ── CLAUSE CARDS ── */
+.clause-card{
+  background:#fff8f8;border:1px solid #fdd5d5;
+  border-left:4px solid var(--risk-high);border-radius:10px;
+  padding:0.9rem 1.1rem;margin-bottom:0.75rem;font-size:0.875rem;line-height:1.65;
+}
+.clause-card .matched-kw{
+  background:#ffd5d5;color:#c0392b;border-radius:3px;
+  padding:1px 4px;font-weight:600;
+}
+.clause-reason{margin-top:0.5rem;color:var(--muted);font-size:0.82rem;}
+.clause-reason strong{color:var(--text);}
+
+/* ── AI META ── */
+.ai-box{
+  background:#f9f8f6;border:1px solid var(--cream2);
+  border-radius:12px;padding:1rem 1.2rem;margin-bottom:0.75rem;
+}
+.ai-box-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:.07em;font-weight:700;color:var(--muted);margin-bottom:0.5rem;}
+.ai-box-text{font-size:0.9rem;line-height:1.75;color:var(--text);}
+
+/* ── TEXT VIEWER ── */
+.text-viewer-inner{
+  background:#fafaf8;border:1px solid var(--cream2);border-radius:10px;
+  padding:1.2rem 1.4rem;font-size:0.855rem;line-height:2;
+  max-height:300px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;
+}
+.risk-highlight{
+  background:#ffe5b4;color:#7a4a00;border-radius:3px;
+  padding:1px 3px;font-weight:600;border-bottom:2px solid #e6a817;
+}
+
+/* ── LINK BANNER ── */
+.link-banner{
+  margin-top:1.2rem;background:#f0fdf4;border:1px solid #86efac;
+  border-radius:10px;padding:0.9rem 1.2rem;display:none;
+  font-size:0.875rem;color:var(--green);align-items:center;gap:0.7rem;
+  animation:fadeIn 0.3s ease;
+}
+.link-banner.visible{display:flex;}
+.link-banner a{color:var(--navy);font-weight:600;text-decoration:underline;}
+</style>
+</head>
+<body>
+
+<script src="auth.js"></script>
+<script>Auth.requireAuth(["user","lawyer","admin"]);</script>
+
+<nav>
+  <a href="nyayasetu.html" class="logo">
+    <div class="logo-icon">N</div>
+    <div class="logo-text">Nyaya<span>Setu</span></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="nyayasetu.html">Home</a></li>
+    <li><a href="awareness.html">Legal Awareness</a></li>
+    <li><a href="query.html">Submit Query</a></li>
+    <li><a href="document.html" class="active">Analyze Document</a></li>
+    <li><a href="lawyers.html">Find a Lawyer</a></li>
+    <li><a href="dashboard.html">Dashboard</a></li>
+  </ul>
+  <div id="userChip" style="display:flex;align-items:center;gap:10px;"></div>
+</nav>
+
+<div class="page-header">
+  <h1>Document Risk Analyzer</h1>
+  <p>Upload a legal document — AI will detect risky clauses, obligations, and penalty terms.</p>
+</div>
+
+<div class="container">
+  <div class="card">
+
+    <!-- Upload Zone with drag-and-drop -->
+    <label class="upload-zone" id="uploadZone" for="docFile">
+      <span class="upload-icon">📄</span>
+      <div class="upload-label">Click or drag &amp; drop a Legal Document</div>
+      <div class="upload-hint">Supported: .txt, .pdf, .doc, .docx · Max 10 MB</div>
+      <div class="file-info" id="fileInfo">
+        <span>📎</span><span id="fileName"></span>
+      </div>
+      <div class="file-size-warn" id="fileSizeWarn">⚠️ Large file — processing may take a moment.</div>
+      <input type="file" id="docFile" accept=".txt,.pdf,.doc,.docx" onchange="onFileSelected(this)">
+    </label>
+
+    <!-- Link to existing query -->
+    <div class="query-linker" id="queryLinker">
+      <label>🔗 Link this document to an existing query (optional)</label>
+      <select id="querySelect">
+        <option value="">— Select a query —</option>
+      </select>
+    </div>
+
+    <button id="analyzeBtn" class="analyze-btn" onclick="runAnalysis()" disabled>
+      <div class="btn-spinner" id="btnSpinner"></div>
+      <span id="analyzeBtnText">🔍 Analyze Document</span>
+    </button>
+
+    <!-- Progress bar -->
+    <div class="progress-bar-wrap" id="progressWrap">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- Inline error -->
+    <div class="error-banner" id="errorBanner" role="alert">
+      <span>⚠️</span>
+      <span id="errorText">An error occurred.</span>
+      <button class="error-retry-btn" onclick="retryAnalysis()">↺ Retry</button>
+    </div>
+
+    <!-- Risk Score Banner -->
+    <div class="risk-banner" id="riskBanner">
+      <div class="risk-icon" id="riskIcon">⚠️</div>
+      <div>
+        <div class="risk-label">Risk Assessment</div>
+        <div class="risk-title" id="riskTitle">—</div>
+        <div class="risk-sub" id="riskSub">—</div>
+      </div>
+    </div>
+
+    <!-- AI Summary & Advice -->
+    <section class="result-section" id="aiMetaSection">
+      <div class="ai-box">
+        <div class="ai-box-label">📑 AI Document Summary</div>
+        <div class="ai-box-text" id="summaryText"></div>
+      </div>
+      <div class="ai-box" id="obligationsBox" style="display:none;">
+        <div class="ai-box-label">📜 Key Obligations</div>
+        <div class="ai-box-text" id="obligationsText">
+          <ul id="obligationsList" style="margin:0.5rem 0 0; padding-left:1.2rem; font-size:0.875rem;"></ul>
+        </div>
+      </div>
+      <div class="ai-box">
+        <div class="ai-box-label">💡 Legal Advice</div>
+        <div class="ai-box-text" id="adviceText"></div>
+      </div>
+    </section>
+
+    <!-- Risky Clauses List -->
+    <div class="result-section" id="clausesSection">
+      <div class="section-title">🚨 Potential Risk Clauses</div>
+      <div id="clausesList"></div>
+    </div>
+
+    <!-- Document Text Viewer -->
+    <div class="result-section" id="textViewerSection">
+      <div class="section-title">📃 Document Text <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.75rem;color:var(--muted)">(risk terms highlighted)</span></div>
+      <div class="text-viewer-inner" id="textViewerInner"></div>
+    </div>
+
+    <!-- Query link success banner -->
+    <div class="link-banner" id="linkBanner">
+      ✅ Document linked to your query. Status updated to <strong>In Progress</strong>.
+      <a href="dashboard.html">View dashboard →</a>
+    </div>
+
+  </div>
+</div>
+
+<script src="queryStore.js"></script>
+<script>
+Auth.renderUserChip();
+// ─────────────────────────────────────────────────────────────────────────────
+//  NyayaSetu — Document Risk Analyzer (v2)
+//  Improvements: drag-drop, inline errors, progress indicator, no alert()
+// ─────────────────────────────────────────────────────────────────────────────
+
+const DOCUMENT_API  = "http://localhost:5050/api/analyze-document";
+const AI_ANALYZE_API = "http://localhost:5050/api/ai-analyze";
+
+// ── Risk Keywords ─────────────────────────────────────────────────────────────
+const RISK_KEYWORDS = [
+  { keyword:"penalty",           weight:2 },
+  { keyword:"termination",       weight:2 },
+  { keyword:"termination clause",weight:2 },
+  { keyword:"liability",         weight:2 },
+  { keyword:"breach",            weight:2 },
+  { keyword:"non-refundable",    weight:2 },
+  { keyword:"legal action",      weight:2 },
+  { keyword:"forfeit",           weight:2 },
+  { keyword:"indemnify",         weight:2 },
+  { keyword:"indemnification",   weight:2 },
+  { keyword:"irrevocable",       weight:2 },
+  { keyword:"liquidated damages",weight:2 },
+  { keyword:"interest",          weight:1 },
+  { keyword:"default",           weight:1 },
+  { keyword:"arbitration",       weight:1 },
+  { keyword:"waiver",            weight:1 },
+  { keyword:"without notice",    weight:1 },
+  { keyword:"at sole discretion",weight:1 },
+  { keyword:"governing law",     weight:1 },
+  { keyword:"jurisdiction",      weight:1 },
+  { keyword:"damages",           weight:1 },
+  { keyword:"dispute",           weight:1 },
+  { keyword:"obligation",        weight:1 },
+  { keyword:"warranty",          weight:1 },
+];
+const RISK_THRESHOLDS = { HIGH:6, MEDIUM:2 };
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let selectedFile = null;
+
+// ── Utility ───────────────────────────────────────────────────────────────────
+function escapeHTML(str) {
+  return String(str)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+function escapeRegex(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+}
+
+// ── Show/hide error ────────────────────────────────────────────────────────────
+function showError(msg) {
+  document.getElementById("errorText").textContent = msg;
+  document.getElementById("errorBanner").classList.add("visible");
+}
+function hideError() {
+  document.getElementById("errorBanner").classList.remove("visible");
+}
+
+// ── Progress bar helpers ───────────────────────────────────────────────────────
+function setProgress(pct) {
+  document.getElementById("progressWrap").classList.add("visible");
+  document.getElementById("progressBar").style.width = pct + "%";
+}
+function hideProgress() {
+  document.getElementById("progressWrap").classList.remove("visible");
+  document.getElementById("progressBar").style.width = "0%";
+}
+
+// ── Button loading state ───────────────────────────────────────────────────────
+function setButtonLoading(loading, label) {
+  const btn = document.getElementById("analyzeBtn");
+  btn.disabled = loading;
+  btn.classList.toggle("loading", loading);
+  if (label) document.getElementById("analyzeBtnText").textContent = label;
+  if (loading) {
+    document.getElementById("btnSpinner").style.display = "block";
+  } else {
+    document.getElementById("btnSpinner").style.display = "none";
+  }
+}
+
+// ── File selected ──────────────────────────────────────────────────────────────
+function onFileSelected(input) {
+  selectedFile = input.files[0] || null;
+  updateFileDisplay();
+}
+
+function updateFileDisplay() {
+  if (!selectedFile) return;
+  const sizeKB = Math.round(selectedFile.size / 1024);
+  const sizeMB = (selectedFile.size / (1024*1024)).toFixed(1);
+  document.getElementById("fileName").textContent = `${selectedFile.name} (${sizeKB > 1024 ? sizeMB + " MB" : sizeKB + " KB"})`;
+  document.getElementById("fileInfo").classList.add("visible");
+  document.getElementById("fileSizeWarn").style.display = selectedFile.size > 4*1024*1024 ? "block" : "none";
+  document.getElementById("analyzeBtn").disabled = false;
+  document.getElementById("analyzeBtnText").textContent = "🔍 Analyze Document";
+  hideError();
+}
+
+// ── Drag & Drop ────────────────────────────────────────────────────────────────
+const uploadZone = document.getElementById("uploadZone");
+
+uploadZone.addEventListener("dragenter", e => { e.preventDefault(); uploadZone.classList.add("drag-over"); });
+uploadZone.addEventListener("dragover",  e => { e.preventDefault(); });
+uploadZone.addEventListener("dragleave", e => { if (!uploadZone.contains(e.relatedTarget)) uploadZone.classList.remove("drag-over"); });
+uploadZone.addEventListener("drop", e => {
+  e.preventDefault();
+  uploadZone.classList.remove("drag-over");
+  const file = e.dataTransfer.files[0];
+  if (!file) return;
+  const ext = file.name.split(".").pop().toLowerCase();
+  if (!["txt","pdf","doc","docx"].includes(ext)) {
+    showError("Unsupported file type. Please upload .pdf, .doc, .docx, or .txt.");
+    return;
+  }
+  selectedFile = file;
+  document.getElementById("docFile").files; // can't set, but we track selectedFile
+  updateFileDisplay();
+});
+
+// ── Retry button ───────────────────────────────────────────────────────────────
+function retryAnalysis() {
+  hideError();
+  runAnalysis();
+}
+
+// ── Document analysis ──────────────────────────────────────────────────────────
+function extractSentences(text) {
+  return text.split(/(?<=[.!?])\s+|\n+/).map(s=>s.trim()).filter(s=>s.length>10);
+}
+
+function analyzeDocumentLocal(text) {
+  const sentences = extractSentences(text);
+  const riskyClauses = [];
+  const matchedKws = new Set();
+  let weightedScore = 0;
+  sentences.forEach(sentence => {
+    const lower = sentence.toLowerCase();
+    let isRisky = false;
+    RISK_KEYWORDS.forEach(({keyword,weight}) => {
+      if (lower.includes(keyword)) { isRisky=true; weightedScore+=weight; matchedKws.add(keyword); }
+    });
+    if (isRisky) riskyClauses.push(sentence);
+  });
+  const riskLevel = weightedScore>=RISK_THRESHOLDS.HIGH ? "High"
+                  : weightedScore>=RISK_THRESHOLDS.MEDIUM ? "Medium" : "Low";
+  let highlightedHTML = escapeHTML(text);
+  matchedKws.forEach(kw => {
+    const regex = new RegExp(`(${escapeRegex(kw)})`,"gi");
+    highlightedHTML = highlightedHTML.replace(regex,`<span class="risk-highlight">$1</span>`);
+  });
+  return { highlightedHTML, riskyClauses, riskLevel, matchedKeywords:[...matchedKws] };
+}
+
+function highlightKeywordsInClause(sentence) {
+  let html = escapeHTML(sentence);
+  RISK_KEYWORDS.forEach(({keyword}) => {
+    const regex = new RegExp(`(${escapeRegex(keyword)})`,"gi");
+    html = html.replace(regex,`<span class="matched-kw">$1</span>`);
+  });
+  return html;
+}
+
+// ── Render results from AI ─────────────────────────────────────────────────────
+function renderAIResults(analysis, sourceText) {
+  const riskLevel = String(analysis.risk_level || "Low");
+  const riskyClauses = Array.isArray(analysis.risky_clauses) ? analysis.risky_clauses : [];
+  const icons = { High:"🔴", Medium:"🟡", Low:"🟢" };
+  const banner = document.getElementById("riskBanner");
+  banner.className = `risk-banner visible ${riskLevel.toLowerCase()}`;
+  document.getElementById("riskIcon").textContent  = icons[riskLevel] || "🟢";
+  document.getElementById("riskTitle").textContent = `${riskLevel} Risk Document`;
+  document.getElementById("riskSub").textContent   = `${riskyClauses.length} risky clause(s) identified by AI.`;
+
+  const clausesList = document.getElementById("clausesList");
+  clausesList.innerHTML = "";
+  if (!riskyClauses.length) {
+    clausesList.innerHTML = `<p style='color:var(--muted);font-size:0.88rem;'>No specific risk clauses detected by AI.</p>`;
+  } else {
+    riskyClauses.forEach(item => {
+      const card = document.createElement("div");
+      card.className = "clause-card";
+      card.innerHTML = `<div>${escapeHTML(item.clause||"")}</div><div class="clause-reason"><strong>Why risky:</strong> ${escapeHTML(item.reason||"")}</div>`;
+      clausesList.appendChild(card);
+    });
+  }
+
+  document.getElementById("summaryText").textContent = analysis.summary || "No summary available.";
+  document.getElementById("adviceText").textContent  = analysis.advice  || "Please consult a legal professional.";
+
+  // Render obligations
+  const obligationsBox = document.getElementById("obligationsBox");
+  const obligationsList = document.getElementById("obligationsList");
+  const obligations = Array.isArray(analysis.obligations) ? analysis.obligations : [];
+  if (obligations.length > 0) {
+    obligationsList.innerHTML = obligations.map(o => `<li>${escapeHTML(o)}</li>`).join("");
+    obligationsBox.style.display = "block";
+  } else {
+    obligationsBox.style.display = "none";
+  }
+
+  document.getElementById("textViewerInner").innerHTML = escapeHTML(sourceText||"");
+
+  ["aiMetaSection","clausesSection","textViewerSection"].forEach(id =>
+    document.getElementById(id).classList.add("visible")
+  );
+}
+
+// ── Main run ───────────────────────────────────────────────────────────────────
+async function runAnalysis() {
+  if (!selectedFile) return;
+  hideError();
+  setButtonLoading(true, "Extracting text…");
+  setProgress(15);
+
+  // Step 1: Extract text from backend
+  let text = null;
+  try {
+    const formData = new FormData();
+    formData.append("document", selectedFile);
+    const response = await fetch(DOCUMENT_API, { method:"POST", body:formData });
+    const data = await response.json();
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Could not process this document.");
+    }
+    text = data.text;
+  } catch(err) {
+    hideProgress();
+    setButtonLoading(false, "🔍 Analyze Document");
+    const isNetErr = err.message.includes("Failed to fetch") || err.message.includes("NetworkError");
+    showError(isNetErr
+      ? "Cannot reach the backend server. Please start it at localhost:5050 and try again."
+      : "Could not extract text: " + err.message);
+    return;
+  }
+
+  if (text.length < 30) {
+    hideProgress();
+    setButtonLoading(false, "🔍 Analyze Document");
+    showError("The document appears too short to analyze. Please check the file content.");
+    return;
+  }
+
+  setProgress(50);
+  setButtonLoading(true, "Running AI analysis…");
+
+  // Step 2: AI analysis (with keyword fallback)
+  let usedFallback = false;
+  try {
+    const response = await fetch(AI_ANALYZE_API, {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({text}),
+    });
+    const data = await response.json();
+    setProgress(85);
+
+    if (!response.ok) {
+      // Non-200: gracefully fall back to keyword analysis
+      usedFallback = true;
+      throw new Error(data?.error || data?.message || "AI unavailable");
+    }
+
+    renderAIResults(data, text);
+    setProgress(100);
+    setTimeout(hideProgress, 600);
+
+  } catch(err) {
+    if (!usedFallback) {
+      // Unexpected error (network, parse) — still fall back
+      usedFallback = true;
+    }
+    console.warn("[Document] AI analysis failed, using keyword fallback:", err.message);
+    const fallback = analyzeDocumentLocal(text);
+    renderAIResults({
+      risk_level: fallback.riskLevel,
+      summary: `Fallback analysis found ${fallback.riskyClauses.length} potentially risky clause(s). For a full AI analysis, ensure the backend AI service is running.`,
+      risky_clauses: fallback.riskyClauses.map(c => ({
+        clause: c,
+        reason: "Contains legally sensitive wording. Please verify with a qualified lawyer.",
+      })),
+      advice: "AI service is temporarily unavailable. Review the highlighted clauses and consult a lawyer before signing.",
+    }, text);
+    setProgress(100);
+    setTimeout(hideProgress, 600);
+  }
+
+  // Step 3: Link to query
+  const selectedId = document.getElementById("querySelect").value;
+  let updatedQuery = null;
+  try {
+    if (selectedId) {
+      updatedQuery = await QueryStore.updateQuery(selectedId, { document_uploaded:true, status:"in_progress" });
+    } else {
+      updatedQuery = await QueryStore.attachDocumentToLatest();
+    }
+    if (updatedQuery) document.getElementById("linkBanner").classList.add("visible");
+  } catch(e) {
+    console.warn("[Document] Could not link to query:", e.message);
+  }
+
+  setButtonLoading(false, "✓ Analysis Complete");
+}
+
+// ── Populate query selector ────────────────────────────────────────────────────
+async function loadQueryOptions() {
+  try {
+    const queries = await QueryStore.loadAll();
+    const select = document.getElementById("querySelect");
+    const linker = document.getElementById("queryLinker");
+    if (!queries.length) return;
+    queries.forEach(q => {
+      const opt = document.createElement("option");
+      opt.value = q.query_id;
+      const preview = q.user_input.length > 65 ? q.user_input.slice(0,62)+"…" : q.user_input;
+      opt.textContent = `[${q.query_id}] ${preview}`;
+      select.appendChild(opt);
+    });
+    linker.style.display = "block";
+  } catch(e) { console.warn("Query load failed:", e.message); }
+}
+
+loadQueryOptions();
+</script>
+
+<!-- NyayaBot Chatbot -->
+<button id="chatbotFab" class="chatbot-fab" aria-label="Open NyayaBot" aria-expanded="false">💬</button>
+<div id="chatbotOverlay" class="chatbot-overlay" aria-hidden="true"></div>
+<section id="chatbotPanel" class="chatbot-panel" aria-label="NyayaBot chatbot" aria-modal="true" role="dialog">
+  <div class="chatbot-header">
+    <div class="chatbot-avatar">👩‍⚖️</div>
+    <div class="chatbot-header-text">
+      <div class="chatbot-title">NyayaBot</div>
+      <div class="chatbot-subtitle">AI Legal Assistant · Indian Law</div>
+    </div>
+    <div class="chatbot-status"><div class="status-dot"></div><span>Online</span></div>
+    <button id="chatbotClose" class="chatbot-close" aria-label="Close chatbot">✕</button>
+  </div>
+  <div id="chatbotMessages" class="chatbot-messages"></div>
+  <div class="chatbot-input-wrap">
+    <div class="chatbot-input-row">
+      <input id="chatbotInput" type="text" placeholder="Describe your legal issue…" autocomplete="off" maxlength="2100"/>
+      <button id="chatbotSend" class="chatbot-send" type="button">Send ➤</button>
+    </div>
+    <div id="chatbotCharCount" class="chatbot-char-count"></div>
+  </div>
+</section>
+<script src="chatbot.js"></script>
+
+</body>
+</html>

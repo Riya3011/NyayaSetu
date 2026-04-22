@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Submit your legal query to NyayaSetu and get instant AI-powered classification, urgency assessment, and lawyer recommendations.">
+  <title>NyayaSetu | Submit Legal Query</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Outfit:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="chatbot.css">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --navy: #0a1628;
+      --navy2: #0e1f3a;
+      --gold: #c9992a;
+      --gold2: #f0c040;
+      --cream: #f5f0e8;
+      --cream2: #ede6d8;
+      --text: #1a2540;
+      --muted: #6b7a99;
+      --white: #ffffff;
+      --border: rgba(201, 153, 42, 0.2);
+      --red: #dc2626;
+      --green: #1a7f37;
+      --amber: #b78103;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Outfit', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+    }
+
+    /* ── NAV ── */
+    nav {
+      background: var(--navy);
+      padding: 1rem 3.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: white;
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      background: var(--gold);
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-family: 'Playfair Display';
+      font-size: 1rem;
+      color: var(--navy);
+    }
+
+    .logo-text {
+      font-family: 'Playfair Display';
+      font-size: 1.2rem;
+      color: var(--white);
+    }
+
+    .logo-text span {
+      color: var(--gold2);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.6rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-links a {
+      color: rgba(255, 255, 255, 0.65);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--gold2);
+    }
+
+    @media(max-width:768px) {
+      .nav-links {
+        display: none;
+      }
+
+      nav {
+        padding: 1rem 1.5rem;
+      }
+    }
+
+    /* ── HERO HEADER ── */
+    .page-header {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
+      color: white;
+      padding: 5rem 3.5rem 4rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 80% at 50% 0%, rgba(201, 153, 42, 0.1) 0%, transparent 70%);
+    }
+
+    .page-header h1 {
+      font-family: 'Playfair Display';
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      margin: 0 0 0.75rem;
+      position: relative;
+    }
+
+    .page-header p {
+      color: rgba(255, 255, 255, 0.55);
+      margin: 0;
+      font-size: 1rem;
+      position: relative;
+    }
+
+    /* ── LAYOUT ── */
+    .container {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 5rem;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--white);
+      padding: 2.5rem;
+      border-radius: 20px;
+      border: 1px solid var(--cream2);
+      box-shadow: 0 8px 32px rgba(10, 22, 40, 0.07);
+    }
+
+    /* ── LABEL ── */
+    .field-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text);
+      margin-bottom: 0.6rem;
+    }
+
+    .char-counter {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    .char-counter.warn {
+      color: var(--amber);
+    }
+
+    .char-counter.over {
+      color: var(--red);
+      font-weight: 600;
+    }
+
+    /* ── TEXTAREA ── */
+    textarea {
+      width: 100%;
+      min-height: 140px;
+      padding: 1rem;
+      border-radius: 10px;
+      border: 1.5px solid rgba(201, 153, 42, 0.25);
+      font-family: 'Outfit';
+      font-size: 0.95rem;
+      resize: vertical;
+      line-height: 1.6;
+      color: var(--text);
+      background: #fffefb;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: rgba(201, 153, 42, 0.7);
+      box-shadow: 0 0 0 3px rgba(201, 153, 42, 0.12);
+      background: var(--white);
+    }
+
+    textarea::placeholder {
+      color: rgba(26, 37, 64, 0.35);
+    }
+
+    /* ── SUBMIT BUTTON ── */
+    .submit-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-top: 1.2rem;
+      padding: 0.85rem 2rem;
+      background: linear-gradient(135deg, var(--gold) 0%, #b8821e 100%);
+      color: var(--navy);
+      border: none;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      font-family: 'Outfit';
+      box-shadow: 0 6px 20px rgba(201, 153, 42, 0.35);
+      transition: transform 0.18s, box-shadow 0.2s, filter 0.18s;
+    }
+
+    .submit-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(201, 153, 42, 0.45);
+      filter: brightness(1.06);
+    }
+
+    .submit-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    /* Loading spinner */
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(10, 22, 40, 0.25);
+      border-top-color: var(--navy);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+
+    .submit-btn.loading .spinner {
+      display: block;
+    }
+
+    .submit-btn.loading .btn-text::after {
+      content: ' …';
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* ── ERROR BANNER ── */
+    .error-banner {
+      margin-top: 1rem;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-left: 4px solid var(--red);
+      border-radius: 10px;
+      padding: 0.9rem 1.1rem;
+      font-size: 0.875rem;
+      color: #991b1b;
+      display: none;
+      align-items: center;
+      gap: 0.6rem;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .error-banner.visible {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-4px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ── RESULT BOX ── */
+    .result-box {
+      margin-top: 1.8rem;
+      background: linear-gradient(135deg, #f9f8f5 0%, #f4ede0 100%);
+      padding: 1.5rem 1.8rem;
+      border-radius: 14px;
+      border: 1px solid var(--cream2);
+      border-left: 4px solid var(--gold);
+      display: none;
+      animation: fadeIn 0.35s ease;
+    }
+
+    .result-box.visible {
+      display: block;
+    }
+
+    .result-box-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--navy);
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+    }
+
+    @media(max-width:500px) {
+      .result-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .result-item label {
+      display: block;
+      font-size: 0.7rem;
+      color: var(--muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 0.4rem;
+    }
+
+    .result-item p {
+      margin: 0;
+      font-weight: 600;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 0.3rem 0.8rem;
+      border-radius: 2rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .badge-high {
+      background: #fef2f2;
+      color: var(--red);
+    }
+
+    .badge-medium {
+      background: #fffbeb;
+      color: var(--amber);
+    }
+
+    .badge-low {
+      background: #f0fdf4;
+      color: var(--green);
+    }
+
+    .badge-conf-high {
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .badge-conf-medium {
+      background: #fffbeb;
+      color: var(--amber);
+    }
+
+    .badge-conf-low {
+      background: #f9fafb;
+      color: #4b5563;
+    }
+
+    .lawyer-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(201, 153, 42, 0.1);
+      border: 1px solid rgba(201, 153, 42, 0.25);
+      padding: .35rem .9rem;
+      border-radius: 2rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--navy);
+    }
+
+    /* Confidence bar */
+    .conf-bar-wrap {
+      margin-top: 0.5rem;
+      height: 5px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .conf-bar {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.7s ease;
+    }
+
+    .conf-bar.high {
+      width: 100%;
+      background: linear-gradient(90deg, #2563eb, #60a5fa);
+    }
+
+    .conf-bar.medium {
+      width: 55%;
+      background: linear-gradient(90deg, var(--amber), #fbbf24);
+    }
+
+    .conf-bar.low {
+      width: 20%;
+      background: #9ca3af;
+    }
+
+    /* ── CONFIRM BANNER ── */
+    .confirm-banner {
+      margin-top: 1.2rem;
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      border-radius: 12px;
+      padding: 1.1rem 1.3rem;
+      display: none;
+      align-items: flex-start;
+      gap: 0.8rem;
+      animation: fadeIn 0.35s ease;
+    }
+
+    .confirm-banner.visible {
+      display: flex;
+    }
+
+    .confirm-banner .icon {
+      font-size: 1.4rem;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    .confirm-banner p {
+      margin: 0 0 0.35rem;
+      font-size: 0.88rem;
+      color: #15803d;
+    }
+
+    .confirm-banner a {
+      color: var(--navy);
+      font-weight: 600;
+      text-decoration: underline;
+    }
+
+    .query-id-note {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.35rem;
+    }
+
+    /* ── NEXT ACTIONS ── */
+    .next-actions {
+      margin-top: 1.5rem;
+      padding-top: 1.3rem;
+      border-top: 1px solid var(--cream2);
+      display: none;
+    }
+
+    .next-actions.visible {
+      display: block;
+    }
+
+    .next-actions p {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      margin: 0 0 0.75rem;
+    }
+
+    .action-btns {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-decoration: none;
+      border: 1.5px solid var(--cream2);
+      color: var(--text);
+      background: var(--white);
+      transition: all 0.2s;
+    }
+
+    .action-btn:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      transform: translateY(-1px);
+    }
+
+    .action-btn.primary {
+      background: var(--navy);
+      color: var(--white);
+      border-color: var(--navy);
+    }
+
+    .action-btn.primary:hover {
+      background: var(--navy2);
+      color: var(--white);
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+
+<body>
+
+<script src="auth.js"></script>
+<script>Auth.requireAuth(["user","lawyer","admin"]);</script>
+
+  <nav>
+    <a href="nyayasetu.html" class="logo">
+      <div class="logo-icon">N</div>
+      <div class="logo-text">Nyaya<span>Setu</span></div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="nyayasetu.html">Home</a></li>
+      <li><a href="awareness.html">Legal Awareness</a></li>
+      <li><a href="query.html" class="active">Submit Query</a></li>
+      <li><a href="document.html">Analyze Document</a></li>
+      <li><a href="lawyers.html">Find a Lawyer</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+    </ul>
+    <div id="userChip" style="display:flex;align-items:center;gap:10px;"></div>
+  </nav>
+
+  <div class="page-header">
+    <h1>Describe Your Legal Issue</h1>
+    <p>Our AI will classify your issue, assess urgency, and recommend the right type of lawyer.</p>
+  </div>
+
+  <div class="container">
+    <div class="card">
+
+      <!-- Textarea with char counter -->
+      <div class="field-label" for="queryInput">
+        <span>Your Legal Issue</span>
+        <span class="char-counter" id="charCounter">0 / 1000</span>
+      </div>
+      <textarea id="queryInput"
+        placeholder="Example: My landlord is refusing to return my security deposit of ₹50,000 even after 60 days of vacating the property. He is ignoring all my messages."
+        maxlength="2000" oninput="onInputChange()" aria-describedby="charCounter"></textarea>
+
+      <button id="submitBtn" class="submit-btn" onclick="handleSubmit()">
+        <div class="spinner" id="spinner"></div>
+        <span class="btn-text">⚖️ Analyze &amp; Submit Query</span>
+      </button>
+
+      <!-- Inline error banner -->
+      <div class="error-banner" id="errorBanner" role="alert">
+        <span>⚠️</span>
+        <span id="errorText"></span>
+      </div>
+
+      <!-- Analysis result panel -->
+      <div class="result-box" id="resultBox">
+        <div class="result-box-title">⚖️ Query Analysis Results</div>
+        <div class="result-grid">
+          <div class="result-item">
+            <label>Detected Category</label>
+            <p id="r-category">—</p>
+          </div>
+          <div class="result-item">
+            <label>Urgency Level</label>
+            <p id="r-urgency">—</p>
+          </div>
+          <div class="result-item">
+            <label>Suggested Lawyer</label>
+            <p id="r-lawyer">—</p>
+          </div>
+          <div class="result-item">
+            <label>Classification Confidence</label>
+            <p id="r-confidence">—</p>
+            <div class="conf-bar-wrap">
+              <div class="conf-bar" id="r-conf-bar"></div>
+            </div>
+          </div>
+          <div class="result-item" style="grid-column: span 2;">
+            <label>AI Reasoning</label>
+            <p id="r-reasoning" style="font-style: italic; font-weight: 400; color: #4b5563; line-height: 1.4;">—</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Confirmation banner -->
+      <div class="confirm-banner" id="confirmBanner" role="status">
+        <span class="icon">✅</span>
+        <div>
+          <p><strong>Query saved successfully!</strong> Your query has been classified and stored.</p>
+          <p class="query-id-note" id="queryIdNote"></p>
+        </div>
+      </div>
+
+      <!-- Next action buttons -->
+      <div class="next-actions" id="nextActions">
+        <p>What would you like to do next?</p>
+        <div class="action-btns">
+          <a href="document.html" class="action-btn primary">📎 Upload Supporting Document</a>
+          <a href="dashboard.html" class="action-btn">📊 View Dashboard</a>
+          <button onclick="resetForm()" class="action-btn" style="cursor:pointer;">✦ Submit Another</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="queryStore.js"></script>
+  <script>
+    Auth.renderUserChip();
+
+    // ── Character counter ──────────────────────────────────────────────────────
+    const MAX_CHARS = 1000; // soft recommendation (hard limit is 2000 in HTML)
+
+    function onInputChange() {
+      const len = document.getElementById("queryInput").value.length;
+      const counter = document.getElementById("charCounter");
+      counter.textContent = `${len} / ${MAX_CHARS}`;
+      counter.className = len > 1500 ? "char-counter over"
+        : len > MAX_CHARS ? "char-counter warn"
+          : "char-counter";
+    }
+
+    // ── Show/hide error ────────────────────────────────────────────────────────
+    function showError(msg) {
+      document.getElementById("errorText").textContent = msg;
+      document.getElementById("errorBanner").classList.add("visible");
+    }
+
+    function hideError() {
+      document.getElementById("errorBanner").classList.remove("visible");
+    }
+
+    // ── Set button loading state ───────────────────────────────────────────────
+    function setLoading(loading, labelText) {
+      const btn = document.getElementById("submitBtn");
+      btn.disabled = loading;
+      btn.classList.toggle("loading", loading);
+      if (labelText) btn.querySelector(".btn-text").textContent = labelText;
+    }
+
+    // ── Reset form for new submission ─────────────────────────────────────────
+    function resetForm() {
+      document.getElementById("queryInput").value = "";
+      onInputChange();
+      hideError();
+      document.getElementById("resultBox").classList.remove("visible");
+      document.getElementById("confirmBanner").classList.remove("visible");
+      document.getElementById("nextActions").classList.remove("visible");
+      setLoading(false, "⚖️ Analyze & Submit Query");
+      document.getElementById("queryInput").focus();
+    }
+
+    // ── Main handler ──────────────────────────────────────────────────────────
+    async function handleSubmit() {
+      const input = document.getElementById("queryInput").value.trim();
+
+      hideError();
+
+      // Validation
+      if (!input) {
+        showError("Please describe your legal issue before submitting.");
+        document.getElementById("queryInput").focus();
+        return;
+      }
+      if (input.length < 15) {
+        showError("Please describe your issue in more detail (at least 15 characters).");
+        document.getElementById("queryInput").focus();
+        return;
+      }
+
+      setLoading(true, "Analyzing…");
+
+      try {
+        // createQuery() classifies locally and POSTs to backend
+        const query = await QueryStore.createQuery(input);
+
+        // ── Populate result panel ──
+        document.getElementById("r-category").textContent = query.detected_category || "Other";
+
+        const urgencyIcons = { high: "🔴", medium: "🟡", low: "🟢" };
+        const urg = (query.urgency_level || "low").toLowerCase();
+        const urgLabel = urg.charAt(0).toUpperCase() + urg.slice(1);
+        document.getElementById("r-urgency").innerHTML =
+          `<span class="badge badge-${urg}">${urgencyIcons[urg] || ""} ${urgLabel}</span>`;
+
+        document.getElementById("r-lawyer").innerHTML =
+          `<span class="lawyer-chip">👨‍⚖️ ${query.suggested_lawyer_type || "General Lawyer"}</span>`;
+
+        const confKey = (query.confidence_score || "Low").toLowerCase();
+        const confIcons = { high: "✅", medium: "⚠️", low: "❓" };
+        document.getElementById("r-confidence").innerHTML =
+          `<span class="badge badge-conf-${confKey}">${confIcons[confKey] || ""} ${query.confidence_score}</span>`;
+        document.getElementById("r-conf-bar").className = `conf-bar ${confKey}`;
+
+        // Display reasoning if available (from our new _reasoning property)
+        document.getElementById("r-reasoning").textContent = query._reasoning || "Classification based on legal context provided.";
+
+        // Show panels
+        document.getElementById("resultBox").classList.add("visible");
+        document.getElementById("queryIdNote").textContent = `Query ID: ${query.query_id}`;
+        document.getElementById("confirmBanner").classList.add("visible");
+        document.getElementById("nextActions").classList.add("visible");
+
+        setLoading(false, "✓ Query Submitted");
+        document.getElementById("submitBtn").disabled = true;
+
+      } catch (err) {
+        const isNetworkError = err.message.includes("Failed to fetch") || err.message.includes("NetworkError");
+        if (isNetworkError) {
+          showError("Cannot reach the backend server. Please start it at localhost:5050 and try again.");
+        } else {
+          showError(err.message || "Something went wrong. Please try again.");
+        }
+        setLoading(false, "⚖️ Analyze & Submit Query");
+      }
+    }
+  </script>
+
+  <!-- NyayaBot Chatbot -->
+  <button id="chatbotFab" class="chatbot-fab" aria-label="Open NyayaBot" aria-expanded="false">💬</button>
+  <div id="chatbotOverlay" class="chatbot-overlay" aria-hidden="true"></div>
+  <section id="chatbotPanel" class="chatbot-panel" aria-label="NyayaBot chatbot" aria-modal="true" role="dialog">
+    <div class="chatbot-header">
+      <div class="chatbot-avatar">👩‍⚖️</div>
+      <div class="chatbot-header-text">
+        <div class="chatbot-title">NyayaBot</div>
+        <div class="chatbot-subtitle">AI Legal Assistant · Indian Law</div>
+      </div>
+      <div class="chatbot-status">
+        <div class="status-dot"></div><span>Online</span>
+      </div>
+      <button id="chatbotClose" class="chatbot-close" aria-label="Close chatbot">✕</button>
+    </div>
+    <div id="chatbotMessages" class="chatbot-messages"></div>
+    <div class="chatbot-input-wrap">
+      <div class="chatbot-input-row">
+        <input id="chatbotInput" type="text" placeholder="Describe your legal issue…" autocomplete="off"
+          maxlength="2100" />
+        <button id="chatbotSend" class="chatbot-send" type="button">Send ➤</button>
+      </div>
+      <div id="chatbotCharCount" class="chatbot-char-count"></div>
+    </div>
+  </section>
+  <script src="chatbot.js"></script>
+
+</body>
+
+</html>

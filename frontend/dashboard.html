@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NyayaSetu | My Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --navy:#0a1628;--gold:#c9992a;--gold2:#d6a93c;--light:#f5f0e8;
+  --cream2:#ede6d8;--muted:#6b7a99;--text:#1a2540;
+  --green:#1a7f37;--red:#d62828;--amber:#b78103;--blue:#0369a1;
+}
+body{font-family:'Outfit',sans-serif;background:var(--light);color:var(--text);}
+nav{background:var(--navy);padding:16px 52px;display:flex;justify-content:space-between;align-items:center;}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo-icon{background:var(--gold);width:36px;height:36px;border-radius:8px;display:grid;place-items:center;font-weight:700;font-family:'Playfair Display';color:var(--navy);}
+.logo-text{font-family:'Playfair Display';font-size:20px;color:#fff;}.logo-text span{color:var(--gold2);}
+.nav-links{display:flex;gap:24px;list-style:none;}
+.nav-links a{color:rgba(255,255,255,0.7);text-decoration:none;font-size:14px;transition:color 0.2s;}
+.nav-links a:hover,.nav-links a.active{color:var(--gold2);}
+.nav-right{display:flex;align-items:center;gap:10px;}
+
+.page-header{background:var(--navy);color:white;padding:52px 52px 40px;text-align:center;}
+.page-header h1{font-family:'Playfair Display';font-size:38px;margin-bottom:8px;}
+.page-header p{color:rgba(255,255,255,0.5);font-size:14px;max-width:500px;margin:auto;}
+
+.container{max-width:1100px;margin:auto;padding:40px 52px 60px;}
+
+/* Stats bar */
+.stats-bar{display:flex;gap:16px;margin-bottom:40px;flex-wrap:wrap;}
+.stat-card{background:white;border-radius:12px;padding:18px 22px;flex:1;min-width:130px;
+  border:1px solid var(--cream2);text-align:center;box-shadow:0 2px 10px rgba(0,0,0,0.04);}
+.stat-num{font-size:32px;font-weight:700;color:var(--navy);font-family:'Playfair Display';}
+.stat-lbl{font-size:12px;color:var(--muted);margin-top:3px;}
+.stat-card.urgent .stat-num{color:var(--red);}
+.stat-card.progress .stat-num{color:var(--blue);}
+.stat-card.done .stat-num{color:var(--green);}
+
+/* Section */
+.section-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
+.section-title{font-family:'Playfair Display';font-size:22px;color:var(--navy);}
+.section-divider{border:none;border-top:1px solid var(--cream2);margin:40px 0;}
+
+/* Filter row */
+.filter-row{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.filter-pill{background:white;border:1px solid var(--cream2);padding:6px 14px;border-radius:20px;
+  font-size:13px;cursor:pointer;font-family:'Outfit',sans-serif;color:var(--text);transition:all 0.2s;}
+.filter-pill:hover,.filter-pill.active{background:var(--navy);color:white;border-color:var(--navy);}
+
+/* Query cards */
+.query-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;}
+.query-card{background:white;border-radius:16px;padding:22px 24px;
+  box-shadow:0 4px 16px rgba(0,0,0,0.06);border-left:4px solid #ddd;
+  transition:transform 0.18s,box-shadow 0.18s;cursor:pointer;}
+.query-card:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,0.1);}
+.query-card.urgency-high{border-left-color:var(--red);}
+.query-card.urgency-medium{border-left-color:var(--amber);}
+.query-card.urgency-low{border-left-color:var(--green);}
+.qc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px;}
+.qc-text{font-size:14px;font-weight:600;color:var(--text);flex:1;line-height:1.5;}
+.qc-id{font-size:10px;color:var(--muted);white-space:nowrap;}
+.badge-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;}
+.badge-cat{background:#eef2ff;color:#3730a3;}
+.badge-high{background:#ffe5e5;color:var(--red);}
+.badge-medium{background:#fff4d6;color:var(--amber);}
+.badge-low{background:#e6f7ec;color:var(--green);}
+.badge-pending{background:#f0f4ff;color:#3730a3;}
+.badge-in_progress{background:#e0f0ff;color:var(--blue);}
+.badge-resolved{background:#e6f7ec;color:var(--green);}
+.badge-analyzed{background:#fff4d6;color:var(--amber);}
+.badge-submitted{background:#f0f4ff;color:#6b7a99;}
+.badge-completed{background:#e6f7ec;color:var(--green);}
+.qc-footer{font-size:12px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;}
+.lawyer-chip{background:#e3f2fd;color:var(--blue);font-size:11px;padding:3px 9px;border-radius:10px;font-weight:600;}
+.response-count{background:#f0fdf4;color:var(--green);font-size:11px;padding:3px 9px;border-radius:10px;font-weight:600;}
+
+/* Case detail modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px;backdrop-filter:blur(4px);}
+.modal-overlay.open{display:flex;}
+.modal{background:white;border-radius:20px;width:100%;max-width:640px;max-height:90vh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,0.25);}
+.modal-header{background:var(--navy);color:white;padding:24px 28px;border-radius:20px 20px 0 0;display:flex;justify-content:space-between;align-items:flex-start;}
+.modal-title{font-family:'Playfair Display';font-size:20px;}
+.modal-close{background:none;border:none;color:rgba(255,255,255,0.6);font-size:20px;cursor:pointer;padding:0;line-height:1;}
+.modal-close:hover{color:white;}
+.modal-body{padding:28px;}
+.detail-row{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+.detail-label{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;width:120px;flex-shrink:0;padding-top:1px;}
+.detail-value{font-size:14px;color:var(--text);flex:1;}
+.modal-divider{border:none;border-top:1px solid var(--cream2);margin:18px 0;}
+
+/* Responses */
+.responses-section h4{font-size:15px;font-weight:600;color:var(--navy);margin-bottom:14px;}
+.response-item{background:#f8f9fa;border-radius:10px;padding:14px 16px;margin-bottom:10px;border-left:3px solid var(--gold);}
+.response-meta{font-size:11px;color:var(--muted);margin-bottom:6px;display:flex;gap:10px;align-items:center;}
+.response-role-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;text-transform:uppercase;}
+.response-role-lawyer{background:#e3f2fd;color:var(--blue);}
+.response-role-admin{background:#fce4ec;color:#c62828;}
+.response-msg{font-size:13px;color:var(--text);line-height:1.6;}
+.no-responses{text-align:center;padding:20px;color:var(--muted);font-size:13px;}
+
+/* Lawyer assigned block */
+.lawyer-assigned-box{background:linear-gradient(135deg,#e3f2fd,#e8f5e9);border:1px solid #bbdefb;border-radius:12px;padding:16px 18px;margin-bottom:18px;display:flex;align-items:center;gap:14px;}
+.lawyer-avatar{width:42px;height:42px;background:var(--blue);border-radius:50%;display:grid;place-items:center;font-weight:700;color:white;font-size:16px;flex-shrink:0;}
+.lawyer-info h4{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:2px;}
+.lawyer-info p{font-size:12px;color:var(--muted);}
+
+/* Misc */
+.loading{text-align:center;padding:50px;color:var(--muted);}
+.spinner{width:32px;height:32px;border:3px solid var(--cream2);border-top-color:var(--gold);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.empty{text-align:center;padding:70px 20px;}
+.empty .icon{font-size:48px;margin-bottom:14px;}
+.empty h3{font-family:'Playfair Display';font-size:20px;color:var(--navy);margin-bottom:8px;}
+.empty p{color:var(--muted);font-size:14px;margin-bottom:20px;}
+.btn-gold{background:var(--gold);color:var(--navy);border:none;padding:11px 24px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;font-family:'Outfit',sans-serif;}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:white;padding:12px 20px;border-radius:10px;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,0.2);opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:2000;}
+.toast.show{opacity:1;}
+</style>
+</head>
+<body>
+<script src="auth.js"></script>
+<script>Auth.requireAuth(["user","lawyer","admin"]);</script>
+
+<nav>
+  <a href="nyayasetu.html" class="logo">
+    <div class="logo-icon">N</div>
+    <div class="logo-text">Nyaya<span>Setu</span></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="nyayasetu.html">Home</a></li>
+    <li><a href="awareness.html">Legal Awareness</a></li>
+    <li><a href="query.html">Submit Query</a></li>
+    <li><a href="document.html">Analyze Document</a></li>
+    <li><a href="lawyers.html">Find a Lawyer</a></li>
+    <li><a href="dashboard.html" class="active">My Dashboard</a></li>
+  </ul>
+  <div class="nav-right" id="userChip"></div>
+</nav>
+
+<div class="page-header">
+  <h1 id="welcomeTitle">My Legal Dashboard</h1>
+  <p>Track your queries, view lawyer responses, and monitor case progress.</p>
+</div>
+
+<div class="container">
+
+  <!-- Stats bar -->
+  <div class="stats-bar" id="statsBar">
+    <div class="stat-card"><div class="stat-num">—</div><div class="stat-lbl">Total Queries</div></div>
+    <div class="stat-card urgent"><div class="stat-num">—</div><div class="stat-lbl">High Urgency</div></div>
+    <div class="stat-card progress"><div class="stat-num">—</div><div class="stat-lbl">In Progress</div></div>
+    <div class="stat-card done"><div class="stat-num">—</div><div class="stat-lbl">Resolved</div></div>
+  </div>
+
+  <!-- My Queries section -->
+  <div class="section-hd">
+    <div class="section-title">⚖️ My Queries</div>
+    <a href="query.html" class="btn-gold">+ Submit New Query</a>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-row">
+    <button class="filter-pill active" onclick="setFilter('',this)">All</button>
+    <button class="filter-pill" onclick="setFilter('pending',this)">🔵 Pending</button>
+    <button class="filter-pill" onclick="setFilter('in_progress',this)">🟡 In Progress</button>
+    <button class="filter-pill" onclick="setFilter('resolved',this)">🟢 Resolved</button>
+    <button class="filter-pill" onclick="setFilter('high',this)">🔴 High Urgency</button>
+  </div>
+
+  <div id="queryContainer">
+    <div class="loading"><div class="spinner"></div>Loading your queries…</div>
+  </div>
+
+</div>
+
+<!-- Case detail modal -->
+<div class="modal-overlay" id="caseModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modalTitle">Case Details</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:3px;" id="modalId"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody">
+      <div class="loading"><div class="spinner"></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="queryStore.js"></script>
+<script>
+Auth.renderUserChip();
+const user = Auth.getUser();
+if (user) document.getElementById('welcomeTitle').textContent = `Welcome, ${user.name.split(' ')[0]}`;
+
+let allQueries  = [];
+let activeFilter = '';
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── Load queries ──────────────────────────────────────────────────────────────
+async function loadQueries() {
+  const container = document.getElementById('queryContainer');
+  try {
+    // First try API (new auth-aware endpoint returns only own queries)
+    const r = await Auth.apiFetch('/queries');
+    if (r && r.data.success) {
+      allQueries = r.data.queries || [];
+    } else {
+      // Fallback to queryStore (local+API all queries)
+      allQueries = await QueryStore.loadAll();
+    }
+    renderStats();
+    renderQueries();
+  } catch (err) {
+    container.innerHTML = `<div class="empty"><div class="icon">⚠️</div><h3>Could not load queries</h3><p>${err.message}</p></div>`;
+  }
+}
+
+function renderStats() {
+  const total    = allQueries.length;
+  const urgent   = allQueries.filter(q => q.urgency_level === 'high').length;
+  const progress = allQueries.filter(q => q.status === 'in_progress').length;
+  const resolved = allQueries.filter(q => q.status === 'resolved' || q.status === 'completed').length;
+  document.getElementById('statsBar').innerHTML = `
+    <div class="stat-card"><div class="stat-num">${total}</div><div class="stat-lbl">Total Queries</div></div>
+    <div class="stat-card urgent"><div class="stat-num">${urgent}</div><div class="stat-lbl">High Urgency</div></div>
+    <div class="stat-card progress"><div class="stat-num">${progress}</div><div class="stat-lbl">In Progress</div></div>
+    <div class="stat-card done"><div class="stat-num">${resolved}</div><div class="stat-lbl">Resolved</div></div>
+  `;
+}
+
+function setFilter(val, btn) {
+  activeFilter = val;
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  renderQueries();
+}
+
+function renderQueries() {
+  const container = document.getElementById('queryContainer');
+  let filtered = allQueries;
+
+  if (activeFilter === 'high') {
+    filtered = allQueries.filter(q => q.urgency_level === 'high');
+  } else if (activeFilter) {
+    filtered = allQueries.filter(q => q.status === activeFilter);
+  }
+
+  if (!filtered.length) {
+    container.innerHTML = `
+      <div class="empty">
+        <div class="icon">📋</div>
+        <h3>${allQueries.length === 0 ? 'No queries yet' : 'No queries match this filter'}</h3>
+        <p>${allQueries.length === 0 ? 'Submit your first legal query to get started.' : 'Try a different filter.'}</p>
+        ${allQueries.length === 0 ? '<a class="btn-gold" href="query.html">Submit a Query</a>' : ''}
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = '';
+  const grid = document.createElement('div');
+  grid.className = 'query-grid';
+
+  for (const q of filtered) {
+    const urgCls   = `badge badge-${q.urgency_level || 'low'}`;
+    const urgLbl   = (q.urgency_level || 'low').charAt(0).toUpperCase() + (q.urgency_level || 'low').slice(1);
+    const statCls  = `badge badge-${(q.status || 'pending').replace(/\s/g,'_')}`;
+    const statLbl  = {pending:'Pending',in_progress:'In Progress',resolved:'Resolved',submitted:'Submitted',analyzed:'Analyzed',completed:'Completed'}[q.status] || q.status;
+    const preview  = (q.user_input || '').length > 130 ? q.user_input.slice(0, 127) + '…' : q.user_input;
+    const created  = q.createdAt ? new Date(q.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) : '';
+    const lawyer   = q.lawyer_id;
+    const respCount= (q.responses || []).length;
+
+    const card = document.createElement('div');
+    card.className = `query-card urgency-${q.urgency_level || 'low'}`;
+    card.onclick   = () => openCaseModal(q._id);
+    card.innerHTML = `
+      <div class="qc-top">
+        <div class="qc-text">${preview}</div>
+        <div class="qc-id">${q.query_id || ''}</div>
+      </div>
+      <div class="badge-row">
+        <span class="badge badge-cat">${q.detected_category || 'Other'}</span>
+        <span class="${urgCls}">${urgLbl} Urgency</span>
+        <span class="${statCls}">${statLbl}</span>
+      </div>
+      <div class="qc-footer">
+        <span>📅 ${created}</span>
+        <div style="display:flex;gap:6px;align-items:center;">
+          ${lawyer ? `<span class="lawyer-chip">⚖️ ${typeof lawyer === 'object' ? lawyer.name : 'Assigned'}</span>` : ''}
+          ${respCount > 0 ? `<span class="response-count">💬 ${respCount} response${respCount > 1 ? 's' : ''}</span>` : ''}
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  }
+  container.appendChild(grid);
+}
+
+// ── Case detail modal ─────────────────────────────────────────────────────────
+async function openCaseModal(mongoId) {
+  document.getElementById('caseModal').classList.add('open');
+  document.getElementById('modalBody').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+  try {
+    const r = await Auth.apiFetch(`/queries/${mongoId}`);
+    if (!r || !r.data.success) throw new Error('Could not load case details.');
+    renderModalBody(r.data.query);
+  } catch (err) {
+    document.getElementById('modalBody').innerHTML = `<p style="color:var(--red);">⚠️ ${err.message}</p>`;
+  }
+}
+
+function renderModalBody(q) {
+  document.getElementById('modalTitle').textContent = q.title || q.user_input.slice(0, 60);
+  document.getElementById('modalId').textContent    = q.query_id || '';
+
+  const urgLbl  = (q.urgency_level || 'low').charAt(0).toUpperCase() + (q.urgency_level || 'low').slice(1);
+  const statLbl = {pending:'Pending',in_progress:'In Progress',resolved:'Resolved',submitted:'Submitted',analyzed:'Analyzed',completed:'Completed'}[q.status] || q.status;
+  const created = q.createdAt ? new Date(q.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) : '—';
+
+  let lawyerBlock = '';
+  if (q.lawyer_id) {
+    const l = q.lawyer_id;
+    const initials = (l.name || '?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+    lawyerBlock = `
+      <div class="lawyer-assigned-box">
+        <div class="lawyer-avatar">${initials}</div>
+        <div class="lawyer-info">
+          <h4>⚖️ Assigned Lawyer: ${l.name}</h4>
+          <p>${l.email}${l.specialization ? ' · ' + l.specialization : ''}</p>
+        </div>
+      </div>`;
+  } else {
+    lawyerBlock = `<div style="background:#fff8e1;border:1px solid #ffe082;border-radius:10px;padding:12px 16px;font-size:13px;color:#92400e;margin-bottom:16px;">
+      ⏳ No lawyer assigned yet. An administrator will assign one shortly.
+    </div>`;
+  }
+
+  let responsesHtml = '';
+  if (q.responses && q.responses.length > 0) {
+    responsesHtml = q.responses.map(r => {
+      const ts = r.createdAt ? new Date(r.createdAt).toLocaleString('en-IN') : '';
+      const cls = r.author_role === 'lawyer' ? 'response-role-lawyer' : 'response-role-admin';
+      return `
+        <div class="response-item">
+          <div class="response-meta">
+            <span class="response-role-badge ${cls}">${r.author_role}</span>
+            <strong>${r.author_name}</strong>
+            <span>${ts}</span>
+          </div>
+          <div class="response-msg">${r.message.replace(/\n/g,'<br>')}</div>
+        </div>`;
+    }).join('');
+  } else {
+    responsesHtml = `<div class="no-responses">💬 No responses yet. Your assigned lawyer will respond here.</div>`;
+  }
+
+  document.getElementById('modalBody').innerHTML = `
+    <div class="detail-row"><span class="detail-label">Category</span><span class="detail-value"><span class="badge badge-cat">${q.detected_category || 'Other'}</span></span></div>
+    <div class="detail-row"><span class="detail-label">Urgency</span><span class="detail-value"><span class="badge badge-${q.urgency_level || 'low'}">${urgLbl} Urgency</span></span></div>
+    <div class="detail-row"><span class="detail-label">Status</span><span class="detail-value"><span class="badge badge-${q.status || 'pending'}">${statLbl}</span></span></div>
+    <div class="detail-row"><span class="detail-label">Submitted</span><span class="detail-value">${created}</span></div>
+    <div class="detail-row"><span class="detail-label">Lawyer Type</span><span class="detail-value">${q.suggested_lawyer_type || 'General Lawyer'}</span></div>
+    <hr class="modal-divider">
+    <div class="detail-row"><span class="detail-label">Description</span><span class="detail-value" style="line-height:1.6;">${(q.user_input||'').replace(/\n/g,'<br>')}</span></div>
+    <hr class="modal-divider">
+    ${lawyerBlock}
+    <hr class="modal-divider">
+    <div class="responses-section">
+      <h4>💬 Lawyer / Admin Responses</h4>
+      ${responsesHtml}
+    </div>`;
+}
+
+function closeModal() {
+  document.getElementById('caseModal').classList.remove('open');
+}
+
+// Close modal on overlay click
+document.getElementById('caseModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+loadQueries();
+</script>
+
+<!-- NyayaBot Chatbot -->
+<link rel="stylesheet" href="chatbot.css">
+<button id="chatbotFab" class="chatbot-fab" aria-label="Open NyayaBot" aria-expanded="false">💬</button>
+<div id="chatbotOverlay" class="chatbot-overlay" aria-hidden="true"></div>
+<section id="chatbotPanel" class="chatbot-panel" aria-label="NyayaBot chatbot" aria-modal="true" role="dialog">
+  <div class="chatbot-header">
+    <div class="chatbot-avatar">👩‍⚖️</div>
+    <div class="chatbot-header-text">
+      <div class="chatbot-title">NyayaBot</div>
+      <div class="chatbot-subtitle">AI Legal Assistant · Indian Law</div>
+    </div>
+    <div class="chatbot-status"><div class="status-dot"></div><span>Online</span></div>
+    <button id="chatbotClose" class="chatbot-close" aria-label="Close chatbot">✕</button>
+  </div>
+  <div id="chatbotMessages" class="chatbot-messages"></div>
+  <div class="chatbot-input-wrap">
+    <div class="chatbot-input-row">
+      <input id="chatbotInput" type="text" placeholder="Describe your legal issue…" autocomplete="off" maxlength="2100"/>
+      <button id="chatbotSend" class="chatbot-send" type="button">Send ➤</button>
+    </div>
+    <div id="chatbotCharCount" class="chatbot-char-count"></div>
+  </div>
+</section>
+<script src="chatbot.js"></script>
+</body>
+</html>

@@ -1,0 +1,1825 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NyayaSetu – Digital Legal Awareness & Assistance</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="chatbot.css" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --navy: #0a1628;
+      --navy2: #0e1f3a;
+      --navy3: #152847;
+      --gold: #c9992a;
+      --gold2: #f0c040;
+      --gold-light: rgba(201, 153, 42, 0.15);
+      --cream: #f5f0e8;
+      --cream2: #ede6d8;
+      --text: #1a2540;
+      --muted: #6b7a99;
+      --border: rgba(201, 153, 42, 0.2);
+      --white: #ffffff;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--cream);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--gold);
+      border-radius: 3px;
+    }
+
+    /* ───── NAV ───── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem 5rem;
+      transition: all 0.4s;
+    }
+
+    nav.scrolled {
+      background: rgba(10, 22, 40, 0.96);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.9rem 5rem;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--gold);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--navy);
+      font-family: 'Playfair Display', serif;
+    }
+
+    .logo-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -0.01em;
+    }
+
+    .logo-text span {
+      color: var(--gold2);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--gold2);
+    }
+
+    .nav-btns {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .btn-login {
+      padding: 0.5rem 1.2rem;
+      border-radius: 6px;
+      border: 1px solid rgba(240, 192, 64, 0.4);
+      color: var(--gold2);
+      font-size: 0.85rem;
+      font-weight: 500;
+      text-decoration: none;
+      background: transparent;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .btn-login:hover {
+      background: rgba(240, 192, 64, 0.1);
+    }
+
+    .btn-signup {
+      padding: 0.5rem 1.4rem;
+      border-radius: 6px;
+      background: var(--gold);
+      color: var(--navy);
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-signup:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(201, 153, 42, 0.45);
+    }
+
+    /* ───── HERO ───── */
+    .hero {
+      min-height: 100vh;
+      background: var(--navy);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      padding: 7rem 5rem 5rem;
+    }
+
+    .hero-bg-pattern {
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(ellipse 80% 60% at 70% 40%, rgba(201, 153, 42, 0.08) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 50% at 20% 70%, rgba(14, 31, 58, 0.9) 0%, transparent 70%);
+    }
+
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(201, 153, 42, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201, 153, 42, 0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 80% at 60% 50%, black 10%, transparent 80%);
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold2);
+      border: 1px solid rgba(240, 192, 64, 0.3);
+      padding: 0.4rem 1rem;
+      border-radius: 2rem;
+      margin-bottom: 2rem;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .hero-badge::before {
+      content: '⚖';
+      font-size: 0.85rem;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3rem, 5.5vw, 5.5rem);
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      color: var(--white);
+      animation: fadeUp 0.8s 0.1s ease both;
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--gold2);
+    }
+
+    .hero-tagline {
+      font-size: 1.05rem;
+      color: rgba(255, 255, 255, 0.6);
+      line-height: 1.8;
+      max-width: 520px;
+      margin-top: 1.5rem;
+      font-weight: 300;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2.5rem;
+      flex-wrap: wrap;
+      animation: fadeUp 0.8s 0.3s ease both;
+    }
+
+    .cta-primary {
+      padding: 0.9rem 2rem;
+      border-radius: 8px;
+      background: var(--gold);
+      color: var(--navy);
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .cta-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(201, 153, 42, 0.5);
+    }
+
+    .cta-outline {
+      padding: 0.9rem 2rem;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 500;
+      font-size: 0.95rem;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    .cta-outline:hover {
+      border-color: rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 2.5rem;
+      margin-top: 3.5rem;
+      padding-top: 2.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      animation: fadeUp 0.8s 0.4s ease both;
+    }
+
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--gold2);
+      display: block;
+    }
+
+    .stat-lbl {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.45);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* Hero visual – role cards */
+    .hero-visual {
+      position: relative;
+      animation: fadeUp 0.8s 0.35s ease both;
+    }
+
+    .role-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .rcard {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 1.4rem 1.6rem;
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      transition: transform 0.3s, border-color 0.3s;
+      backdrop-filter: blur(6px);
+    }
+
+    .rcard:hover {
+      transform: translateX(8px);
+      border-color: rgba(201, 153, 42, 0.3);
+    }
+
+    .rcard-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .ic-user {
+      background: rgba(201, 153, 42, 0.15);
+    }
+
+    .ic-lawyer {
+      background: rgba(59, 130, 246, 0.12);
+    }
+
+    .ic-admin {
+      background: rgba(16, 185, 129, 0.12);
+    }
+
+    .rcard-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--white);
+      margin-bottom: 0.25rem;
+    }
+
+    .rcard-desc {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.45);
+    }
+
+    .ai-chip {
+      margin-top: 1.2rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(201, 153, 42, 0.1);
+      border: 1px solid rgba(201, 153, 42, 0.25);
+      border-radius: 2rem;
+      padding: 0.6rem 1.2rem;
+    }
+
+    .ai-chip span {
+      font-size: 0.78rem;
+      color: var(--gold2);
+      font-weight: 500;
+    }
+
+    .pulse {
+      width: 8px;
+      height: 8px;
+      background: var(--gold2);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.5;
+        transform: scale(0.85);
+      }
+    }
+
+    /* ───── SHARED SECTION STYLES ───── */
+    section {
+      padding: 7rem 5rem;
+    }
+
+    .section-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-tag {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.2rem, 4vw, 3.5rem);
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: var(--navy);
+    }
+
+    h2 em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .section-sub {
+      font-size: 1rem;
+      color: var(--muted);
+      line-height: 1.8;
+      max-width: 540px;
+      margin-top: 1rem;
+      font-weight: 300;
+    }
+
+    /* ───── FEATURES ───── */
+    .features {
+      background: var(--white);
+    }
+
+    .features-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 2rem;
+      margin-bottom: 4rem;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .fcard {
+      background: var(--cream);
+      border: 1px solid var(--cream2);
+      border-radius: 16px;
+      padding: 2rem;
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .fcard::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold), var(--gold2));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .fcard:hover {
+      transform: translateY(-5px);
+      border-color: rgba(201, 153, 42, 0.3);
+      box-shadow: 0 20px 40px rgba(201, 153, 42, 0.1);
+    }
+
+    .fcard:hover::before {
+      opacity: 1;
+    }
+
+    .ficon {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-size: 1.4rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .f1 {
+      background: rgba(201, 153, 42, 0.12);
+    }
+
+    .f2 {
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    .f3 {
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .f4 {
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .f5 {
+      background: rgba(139, 92, 246, 0.1);
+    }
+
+    .f6 {
+      background: rgba(234, 88, 12, 0.1);
+    }
+
+    .f7 {
+      background: rgba(20, 184, 166, 0.1);
+    }
+
+    .f8 {
+      background: rgba(236, 72, 153, 0.1);
+    }
+
+    .fcard h3 {
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 0.6rem;
+      color: var(--navy);
+    }
+
+    .fcard p {
+      font-size: 0.875rem;
+      color: var(--muted);
+      line-height: 1.7;
+      font-weight: 300;
+    }
+
+    /* ───── HOW IT WORKS ───── */
+    .how {
+      background: var(--navy);
+    }
+
+    .how h2,
+    .how .section-sub {
+      color: var(--white);
+    }
+
+    .how .section-sub {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .how-header {
+      text-align: center;
+      margin-bottom: 5rem;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0;
+      position: relative;
+    }
+
+    .steps-grid::before {
+      content: '';
+      position: absolute;
+      top: 2.5rem;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(201, 153, 42, 0.3), rgba(201, 153, 42, 0.3), transparent);
+    }
+
+    .step {
+      text-align: center;
+      padding: 0 1.5rem;
+      position: relative;
+    }
+
+    .step-num {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(201, 153, 42, 0.12);
+      border: 2px solid rgba(201, 153, 42, 0.35);
+      display: grid;
+      place-items: center;
+      margin: 0 auto 1.5rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--gold2);
+      position: relative;
+      z-index: 1;
+    }
+
+    .step h4 {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--white);
+      margin-bottom: 0.6rem;
+    }
+
+    .step p {
+      font-size: 0.83rem;
+      color: rgba(255, 255, 255, 0.45);
+      line-height: 1.7;
+    }
+
+    /* ───── AI FEATURES ───── */
+    .ai-section {
+      background: var(--cream);
+    }
+
+    .ai-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    .ai-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .ai-card {
+      background: var(--white);
+      border: 1px solid var(--cream2);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      gap: 1.2rem;
+      align-items: flex-start;
+      transition: border-color 0.3s;
+    }
+
+    .ai-card:hover {
+      border-color: rgba(201, 153, 42, 0.3);
+    }
+
+    .ai-card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      font-size: 1.2rem;
+    }
+
+    .ai-card h4 {
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 0.4rem;
+      color: var(--navy);
+    }
+
+    .ai-card p {
+      font-size: 0.83rem;
+      color: var(--muted);
+      line-height: 1.65;
+      font-weight: 300;
+    }
+
+    .ai-visual {
+      background: var(--navy);
+      border-radius: 20px;
+      padding: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .ai-prompt-box {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    .ai-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.3);
+      margin-bottom: 0.5rem;
+    }
+
+    .ai-text {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.75);
+      line-height: 1.6;
+    }
+
+    .ai-result {
+      background: rgba(201, 153, 42, 0.08);
+      border: 1px solid rgba(201, 153, 42, 0.2);
+      border-radius: 10px;
+      padding: 1.2rem;
+    }
+
+    .ai-tag {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.2rem 0.7rem;
+      border-radius: 2rem;
+      margin: 0.25rem 0.2rem;
+    }
+
+    .tag-cat {
+      background: rgba(59, 130, 246, 0.15);
+      color: #93c5fd;
+    }
+
+    .tag-urgent {
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+    }
+
+    .tag-lawyer {
+      background: rgba(201, 153, 42, 0.15);
+      color: var(--gold2);
+    }
+
+    /* ───── ROLES ───── */
+    .roles {
+      background: var(--white);
+    }
+
+    .roles-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      margin-top: 3.5rem;
+    }
+
+    .role-card {
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--cream2);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .role-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 24px 48px rgba(10, 22, 40, 0.1);
+    }
+
+    .role-head {
+      padding: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .role-icon-wrap {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-size: 1.4rem;
+    }
+
+    .rh1 {
+      background: var(--navy);
+    }
+
+    .rh2 {
+      background: rgba(59, 130, 246, 0.12);
+    }
+
+    .rh3 {
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .role-head h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .role-head p {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.15rem;
+    }
+
+    .role-body {
+      padding: 0 2rem 2rem;
+      border-top: 1px solid var(--cream2);
+    }
+
+    .role-body ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      padding-top: 1.2rem;
+    }
+
+    .role-body li {
+      font-size: 0.875rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .role-body li::before {
+      content: '✦';
+      font-size: 0.6rem;
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+
+    /* ───── TECH STACK ───── */
+    .techstack {
+      background: var(--navy2);
+    }
+
+    .techstack h2 {
+      color: var(--white);
+    }
+
+    .techstack .section-sub {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .tech-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .tech-cat {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 14px;
+      padding: 1.8rem;
+    }
+
+    .tech-cat-title {
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold2);
+      margin-bottom: 1.2rem;
+      font-weight: 600;
+    }
+
+    .tech-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+
+    .tech-tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 0.4rem 0.85rem;
+      font-size: 0.82rem;
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 400;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .tech-tag:hover {
+      border-color: rgba(201, 153, 42, 0.4);
+      background: rgba(201, 153, 42, 0.08);
+      color: var(--gold2);
+    }
+
+    /* ───── FUTURE ───── */
+    .future {
+      background: var(--cream);
+    }
+
+    .future-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.2rem;
+      margin-top: 3rem;
+    }
+
+    .future-item {
+      background: var(--white);
+      border: 1px solid var(--cream2);
+      border-radius: 12px;
+      padding: 1.4rem 1.6rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      transition: transform 0.3s, border-color 0.3s;
+    }
+
+    .future-item:hover {
+      transform: translateY(-3px);
+      border-color: rgba(201, 153, 42, 0.3);
+    }
+
+    .future-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--gold);
+      opacity: 0.5;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    .future-item h4 {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--navy);
+      margin-bottom: 0.3rem;
+    }
+
+    .future-item p {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ───── TEAM ───── */
+    .team {
+      background: var(--white);
+    }
+
+    .team-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .tcard2 {
+      border-radius: 16px;
+      border: 1px solid var(--cream2);
+      padding: 2rem;
+      text-align: center;
+      transition: transform 0.3s, border-color 0.3s;
+    }
+
+    .tcard2:hover {
+      transform: translateY(-5px);
+      border-color: rgba(201, 153, 42, 0.3);
+    }
+
+    .avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 1rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .av1 {
+      background: rgba(201, 153, 42, 0.15);
+      color: var(--gold);
+    }
+
+    .av2 {
+      background: rgba(59, 130, 246, 0.12);
+      color: #3b82f6;
+    }
+
+    .av3 {
+      background: rgba(16, 185, 129, 0.12);
+      color: #10b981;
+    }
+
+    .av4 {
+      background: rgba(139, 92, 246, 0.12);
+      color: #8b5cf6;
+    }
+
+    .tcard2 h4 {
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--navy);
+      margin-bottom: 0.2rem;
+    }
+
+    .tcard2 p {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .prn {
+      font-size: 0.72rem;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      margin-top: 0.4rem;
+    }
+
+    /* ───── CTA ───── */
+    .cta-section {
+      background: var(--navy);
+      text-align: center;
+      padding: 8rem 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-glow {
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(201, 153, 42, 0.12) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .cta-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .cta-inner h2 {
+      color: var(--white);
+      font-size: clamp(2.2rem, 4vw, 3.2rem);
+    }
+
+    .cta-inner .section-sub {
+      color: rgba(255, 255, 255, 0.5);
+      margin: 1.2rem auto 0;
+      text-align: center;
+    }
+
+    .cta-btns {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 2.5rem;
+      flex-wrap: wrap;
+    }
+
+    /* ───── FOOTER ───── */
+    footer {
+      background: var(--navy2);
+      padding: 3rem 5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+
+    .footer-tagline {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.3);
+      max-width: 340px;
+      line-height: 1.6;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-size: 0.82rem;
+      color: rgba(255, 255, 255, 0.4);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--gold2);
+    }
+
+    .footer-copy {
+      font-size: 0.78rem;
+      color: rgba(255, 255, 255, 0.25);
+    }
+
+    /* ───── ANIMATIONS ───── */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(24px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .delay-1 {
+      transition-delay: 0.1s;
+    }
+
+    .delay-2 {
+      transition-delay: 0.2s;
+    }
+
+    .delay-3 {
+      transition-delay: 0.3s;
+    }
+
+    .delay-4 {
+      transition-delay: 0.4s;
+    }
+
+    /* ───── RESPONSIVE ───── */
+    @media(max-width:900px) {
+      nav {
+        padding: 1rem 1.5rem;
+      }
+
+      nav.scrolled {
+        padding: 0.8rem 1.5rem;
+      }
+
+      .nav-links,
+      .nav-btns .btn-login {
+        display: none;
+      }
+
+      section {
+        padding: 5rem 1.5rem;
+      }
+
+      .hero {
+        padding: 6rem 1.5rem 4rem;
+      }
+
+      .hero-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-visual {
+        display: none;
+      }
+
+      .hero-stats {
+        gap: 1.5rem;
+      }
+
+      .ai-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .roles-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .team-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      footer {
+        padding: 2rem 1.5rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ════════ NAV ════════ -->
+  <script src="auth.js"></script>
+  <nav id="nav">
+    <a href="#" class="logo">
+      <div class="logo-icon">N</div>
+      <div class="logo-text">Nyaya<span>Setu</span></div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how">How It Works</a></li>
+      <li><a href="#roles">Roles</a></li>
+      <li><a href="#tech">Tech Stack</a></li>
+      <li><a href="#team">Team</a></li>
+      <li><a href="awareness.html">Legal Awareness</a></li>
+      <li><a href="query.html">Submit Query</a></li>
+      <li><a href="document.html">Analyze Document</a></li>
+      <li><a href="lawyers.html">Find a Lawyer</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+    </ul>
+    <div class="nav-btns" id="navBtns">
+      <!-- Populated by auth.js below -->
+    </div>
+  </nav>
+
+  <!-- ════════ HERO ════════ -->
+  <section class="hero">
+    <div class="hero-bg-pattern"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-inner">
+      <div>
+        <div class="hero-badge">Legal Technology · MIT-WPU Pune</div>
+        <h1>Your Bridge to<br><em>Legal Justice</em><br>& Clarity</h1>
+        <p class="hero-tagline">NyayaSetu is an AI-powered legal awareness portal that classifies your legal issues,
+          summarizes complex documents, and connects you with the right legal expertise — instantly.</p>
+        <div class="hero-cta">
+          <a href="#features" class="cta-primary">Explore Features ↓</a>
+          <a href="#how" class="cta-outline">How It Works ▶</a>
+        </div>
+        <div class="hero-stats">
+          <div><span class="stat-num">3</span><span class="stat-lbl">User Roles</span></div>
+          <div><span class="stat-num">AI</span><span class="stat-lbl">Query Classifier</span></div>
+          <div><span class="stat-num">E2E</span><span class="stat-lbl">Encrypted Docs</span></div>
+          <div><span class="stat-num">Real‑time</span><span class="stat-lbl">Chat</span></div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="role-cards">
+          <div class="rcard">
+            <div class="rcard-icon ic-user">👤</div>
+            <div>
+              <div class="rcard-title">Citizens / Users</div>
+              <div class="rcard-desc">Submit queries, upload documents, get AI-guided legal clarity</div>
+            </div>
+          </div>
+          <div class="rcard">
+            <div class="rcard-icon ic-lawyer">⚖️</div>
+            <div>
+              <div class="rcard-title">Lawyers</div>
+              <div class="rcard-desc">Verified professionals matched by specialization & urgency</div>
+            </div>
+          </div>
+          <div class="rcard">
+            <div class="rcard-icon ic-admin">🛡️</div>
+            <div>
+              <div class="rcard-title">Administrators</div>
+              <div class="rcard-desc">Manage users, verify lawyers & monitor platform analytics</div>
+            </div>
+          </div>
+        </div>
+        <div class="ai-chip">
+          <div class="pulse"></div>
+          <span>AI Classification Engine · Live</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ════════ FEATURES ════════ -->
+  <section class="features" id="features">
+    <div class="section-inner">
+      <div class="features-top">
+        <div>
+          <div class="section-tag reveal">Platform Features</div>
+          <h2 class="reveal">Everything you need to<br><em>navigate the law</em></h2>
+        </div>
+        <p class="section-sub reveal">From document analysis to real-time consultation — NyayaSetu covers the full
+          journey of legal assistance.</p>
+      </div>
+      <div class="features-grid">
+        <div class="fcard reveal">
+          <div class="ficon f1">🤖</div>
+          <h3>AI Legal Query Classifier</h3>
+          <p>Automatically detects the legal category, sub-category, and urgency level from a user's description — and
+            recommends the right type of lawyer.</p>
+        </div>
+        <div class="fcard reveal delay-1">
+          <div class="ficon f2">📄</div>
+          <h3>Document Summarization</h3>
+          <p>Upload complex legal documents and receive concise, plain-language summaries highlighting key clauses,
+            rights, obligations, and potential risks.</p>
+        </div>
+        <div class="fcard reveal delay-2">
+          <div class="ficon f3">💬</div>
+          <h3>Real-Time Secure Chat</h3>
+          <p>Instant consultation between users and verified lawyers via a Socket.io-powered secure chat interface — no
+            delays, no middlemen.</p>
+        </div>
+        <div class="fcard reveal">
+          <div class="ficon f4">🔒</div>
+          <h3>Role-Based Access Control</h3>
+          <p>JWT-secured authentication with distinct roles for Users, Lawyers, and Admins — ensuring every user sees
+            only what they should.</p>
+        </div>
+        <div class="fcard reveal delay-1">
+          <div class="ficon f5">🎯</div>
+          <h3>Intelligent Lawyer Matching</h3>
+          <p>Queries are intelligently routed to lawyers based on their specialization, availability, and the assessed
+            urgency of the issue.</p>
+        </div>
+        <div class="fcard reveal delay-2">
+          <div class="ficon f6">⭐</div>
+          <h3>Feedback & Rating System</h3>
+          <p>Users can rate consultations and lawyers can build their reputation — maintaining quality, transparency,
+            and accountability.</p>
+        </div>
+        <div class="fcard reveal">
+          <div class="ficon f7">☁️</div>
+          <h3>Encrypted Document Storage</h3>
+          <p>All uploaded documents are stored securely via Cloudinary / AWS S3 with encryption, ensuring complete data
+            privacy and controlled access.</p>
+        </div>
+        <div class="fcard reveal delay-1">
+          <div class="ficon f8">📊</div>
+          <h3>Admin Analytics Dashboard</h3>
+          <p>Real-time platform analytics for administrators — manage users, verify lawyers, track query trends, and
+            monitor overall system health.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ HOW IT WORKS ════════ -->
+  <section class="how" id="how">
+    <div class="section-inner">
+      <div class="how-header">
+        <div class="section-tag reveal" style="color:var(--gold2);">User Journey</div>
+        <h2 class="reveal" style="color:var(--white);">From confusion to <em style="color:var(--gold2);">clarity</em> in
+          5 steps</h2>
+        <p class="section-sub reveal" style="margin:1rem auto 0;text-align:center;">NyayaSetu guides every user through
+          a structured, intelligent legal assistance process.</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step reveal">
+          <div class="step-num">01</div>
+          <h4>Register & Login</h4>
+          <p>Create your account securely. Users, Lawyers, and Admins each get a tailored dashboard on login.</p>
+        </div>
+        <div class="step reveal delay-1">
+          <div class="step-num">02</div>
+          <h4>Describe Your Issue</h4>
+          <p>Submit a plain-language description of your legal concern or upload a legal document for analysis.</p>
+        </div>
+        <div class="step reveal delay-2">
+          <div class="step-num">03</div>
+          <h4>AI Classification</h4>
+          <p>The AI engine auto-detects the legal category, urgency level, and recommends the type of lawyer needed.</p>
+        </div>
+        <div class="step reveal delay-3">
+          <div class="step-num">04</div>
+          <h4>Lawyer Matched</h4>
+          <p>The platform intelligently matches and routes your query to the best-fit verified lawyer for your case.</p>
+        </div>
+        <div class="step reveal delay-4">
+          <div class="step-num">05</div>
+          <h4>Consult & Resolve</h4>
+          <p>Chat in real-time, get guidance, and rate the consultation. Your documents stay encrypted throughout.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ AI FEATURES ════════ -->
+  <section class="ai-section" id="ai">
+    <div class="section-inner">
+      <div class="ai-inner">
+        <div>
+          <div class="section-tag reveal">AI Core Modules</div>
+          <h2 class="reveal">Intelligence at the<br><em>heart of justice</em></h2>
+          <p class="section-sub reveal">Two powerful AI modules make NyayaSetu more than a directory — they make it a
+            smart legal co-pilot.</p>
+          <div class="ai-cards" style="margin-top:2.5rem;">
+            <div class="ai-card reveal">
+              <div class="ai-card-icon f1">🧠</div>
+              <div>
+                <h4>Query Classification Engine</h4>
+                <p>NLP-based module built on Python / FastAPI. Analyzes free-text legal queries and classifies them into
+                  category, sub-category, urgency (Low / Medium / High), and recommended lawyer type.</p>
+              </div>
+            </div>
+            <div class="ai-card reveal delay-1">
+              <div class="ai-card-icon f2">📑</div>
+              <div>
+                <h4>Document Summarizer (LLM-based)</h4>
+                <p>Processes uploaded PDFs and legal contracts using a Large Language Model. Extracts key clauses, flags
+                  risky terms, and generates a human-readable plain-language summary.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="ai-visual reveal delay-2">
+          <div class="ai-prompt-box">
+            <div class="ai-label">User Input</div>
+            <div class="ai-text">"My landlord is refusing to return my security deposit after I vacated the property 45
+              days ago and is not responding to messages."</div>
+          </div>
+          <div
+            style="text-align:center;padding:0.75rem 0;font-size:0.75rem;color:rgba(255,255,255,0.3);letter-spacing:0.12em;">
+            ▼ AI Classification Engine ▼</div>
+          <div class="ai-result">
+            <div class="ai-label">Classification Result</div>
+            <div style="margin-top:0.5rem;">
+              <span class="ai-tag tag-cat">Category: Tenant / Rental Law</span>
+              <span class="ai-tag tag-urgent">Urgency: High</span>
+              <span class="ai-tag tag-lawyer">Lawyer: Property Lawyer</span>
+            </div>
+            <div style="margin-top:1rem;font-size:0.82rem;color:rgba(255,255,255,0.55);line-height:1.65;">Sub-category:
+              Security Deposit Dispute · Legal action possible under Rent Control Act. Recommend immediate consultation.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ ROLES ════════ -->
+  <section class="roles" id="roles">
+    <div class="section-inner">
+      <div class="reveal">
+        <div class="section-tag">Role-Based Access</div>
+        <h2>Three distinct roles,<br><em>one unified platform</em></h2>
+        <p class="section-sub">Each user type gets a dedicated, purpose-built experience tailored to their
+          responsibilities.</p>
+      </div>
+      <div class="roles-grid">
+        <div class="role-card reveal">
+          <div class="role-head" style="background:var(--cream);">
+            <div class="role-icon-wrap rh1" style="background:rgba(201,153,42,0.12);">👤</div>
+            <div>
+              <h3>User / Citizen</h3>
+              <p>Individuals seeking legal help</p>
+            </div>
+          </div>
+          <div class="role-body">
+            <ul>
+              <li>Submit legal queries in plain language</li>
+              <li>Upload documents for AI summarization</li>
+              <li>View matched lawyer recommendations</li>
+              <li>Real-time chat consultation</li>
+              <li>Rate and review lawyers</li>
+              <li>Track query history & status</li>
+            </ul>
+          </div>
+        </div>
+        <div class="role-card reveal delay-1">
+          <div class="role-head" style="background:#eff6ff;">
+            <div class="role-icon-wrap" style="background:rgba(59,130,246,0.12);">⚖️</div>
+            <div>
+              <h3>Lawyer</h3>
+              <p>Verified legal professionals</p>
+            </div>
+          </div>
+          <div class="role-body">
+            <ul>
+              <li>Receive matched queries by specialization</li>
+              <li>View AI classification & urgency level</li>
+              <li>Access user-uploaded documents securely</li>
+              <li>Consult via real-time chat interface</li>
+              <li>Manage availability & case load</li>
+              <li>Build reputation through ratings</li>
+            </ul>
+          </div>
+        </div>
+        <div class="role-card reveal delay-2">
+          <div class="role-head" style="background:#f0fdf4;">
+            <div class="role-icon-wrap" style="background:rgba(16,185,129,0.1);">🛡️</div>
+            <div>
+              <h3>Administrator</h3>
+              <p>Platform management & oversight</p>
+            </div>
+          </div>
+          <div class="role-body">
+            <ul>
+              <li>Verify and approve lawyer registrations</li>
+              <li>Manage all user accounts</li>
+              <li>Monitor platform analytics & metrics</li>
+              <li>Resolve disputes and complaints</li>
+              <li>Configure AI classification rules</li>
+              <li>Oversee data security & access logs</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ TECH STACK ════════ -->
+  <section class="techstack" id="tech">
+    <div class="section-inner">
+      <div class="tech-header">
+        <div class="section-tag reveal" style="color:var(--gold2);">Technology</div>
+        <h2 class="reveal">Built on a <em style="color:var(--gold2);">modern full-stack</em></h2>
+        <p class="section-sub reveal" style="color:rgba(255,255,255,0.45);margin:1rem auto 0;text-align:center;">Every
+          technology in NyayaSetu was chosen for performance, scalability, and security.</p>
+      </div>
+      <div class="tech-grid">
+        <div class="tech-cat reveal">
+          <div class="tech-cat-title">Frontend</div>
+          <div class="tech-tags">
+            <span class="tech-tag">HTML</span>
+            <span class="tech-tag">CSS</span>
+            <span class="tech-tag">JavaScript</span>
+            <!--     <span class="tech-tag">React Router</span>
+          <span class="tech-tag">Axios</span>
+          <span class="tech-tag">Recharts</span>
+          <span class="tech-tag">Chart.js</span> -->
+          </div>
+        </div>
+        <div class="tech-cat reveal delay-1">
+          <div class="tech-cat-title">Backend</div>
+          <div class="tech-tags">
+            <span class="tech-tag">Node.js</span>
+            <span class="tech-tag">Express.js</span>
+            <span class="tech-tag">MongoDB</span>
+            <span class="tech-tag">Mongoose</span>
+            <span class="tech-tag">JWT Auth</span>
+            <span class="tech-tag">bbcrypt Security</span>
+            <span class="tech-tag">multer</span>
+            <!--      <span class="tech-tag">REST API</span>. -->
+          </div>
+        </div>
+        <div class="tech-cat reveal delay-2">
+          <div class="tech-cat-title">AI / NLP Layer</div>
+          <div class="tech-tags">
+            <span class="tech-tag">Groq API/span>
+              <span class="tech-tag">LLaMA 3 (70B)</span>
+              <span class="tech-tag">Gemma (Fallback)</span>
+              <span class="tech-tag">Query Classification</span>
+              <span class="tech-tag">LLM Summarization</span>
+              <span class="tech-tag">Document Analysis</span>
+              <span class="tech-tag">Prompt Engineering</span>
+          </div>
+        </div>
+        <div class="tech-cat reveal delay-3">
+          <div class="tech-cat-title">Storage & Tools</div>
+          <div class="tech-tags">
+            <!--     <span class="tech-tag">Cloudinary</span>.  -->
+            <span class="tech-tag">AWS S3</span>
+            <span class="tech-tag">Nodemailer</span>
+            <span class="tech-tag">Encrypted Storage</span>
+            <span class="tech-tag">Git & GitHub</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ FUTURE WORK ════════ -->
+  <section class="future" id="future">
+    <div class="section-inner">
+      <div class="reveal">
+        <div class="section-tag">Roadmap</div>
+        <h2>The road ahead for<br><em>NyayaSetu</em></h2>
+        <p class="section-sub">Planned expansions that will make the platform even more impactful at a national scale.
+        </p>
+      </div>
+      <div class="future-grid">
+        <div class="future-item reveal">
+          <div class="future-num">01</div>
+          <div>
+            <h4>Govt. Legal Aid Integration</h4>
+            <p>Connect with government legal aid services for users who qualify for free legal assistance.</p>
+          </div>
+        </div>
+        <div class="future-item reveal delay-1">
+          <div class="future-num">02</div>
+          <div>
+            <h4>Mobile Application</h4>
+            <p>A native mobile app extending NyayaSetu's reach to rural and underserved communities.</p>
+          </div>
+        </div>
+        <div class="future-item reveal delay-2">
+          <div class="future-num">03</div>
+          <div>
+            <h4>Video Consultation</h4>
+            <p>Face-to-face video calls between users and lawyers directly within the platform.</p>
+          </div>
+        </div>
+        <div class="future-item reveal">
+          <div class="future-num">04</div>
+          <div>
+            <h4>Advanced ML Legal Advice</h4>
+            <p>Deeper ML models that suggest likely outcomes and applicable laws for user cases.</p>
+          </div>
+        </div>
+        <div class="future-item reveal delay-1">
+          <div class="future-num">05</div>
+          <div>
+            <h4>Blockchain Document Verification</h4>
+            <p>Immutable verification of legal documents using distributed ledger technology.</p>
+          </div>
+        </div>
+        <div class="future-item reveal delay-2">
+          <div class="future-num">06</div>
+          <div>
+            <h4>Cybercrime Portal Integration</h4>
+            <p>Direct integration with national cybercrime reporting portals for digital legal complaints.</p>
+          </div>
+        </div>
+        <div class="future-item reveal">
+          <div class="future-num">07</div>
+          <div>
+            <h4>AI Legal Notice Generator</h4>
+            <p>Auto-generate legally sound notices and drafts from user-provided facts using AI.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ TEAM ════════ -->
+  <section class="team" id="team">
+    <div class="section-inner">
+      <div class="team-header">
+        <div class="section-tag reveal">The Team</div>
+        <h2 class="reveal">Built by students of<br><em>MIT-WPU, Pune</em></h2>
+        <p class="section-sub reveal" style="margin:1rem auto 0;text-align:center;">TY-CSE Sem VI · Panel B_B1 · Full
+          Stack Development Lab (CSE3PM07A)</p>
+      </div>
+      <div class="team-grid">
+        <div class="tcard2 reveal">
+          <div class="avatar av1">RG</div>
+          <h4>Riya Gupta</h4>
+          <p>PRN: 1032231882</p>
+          <div class="prn">📞 8826454888</div>
+        </div>
+        <div class="tcard2 reveal delay-1">
+          <div class="avatar av2">AP</div>
+          <h4>Amudhan Pillai</h4>
+          <p>PRN: 1032231812</p>
+          <div class="prn">📞 7666730014</div>
+        </div>
+        <div class="tcard2 reveal delay-2">
+          <div class="avatar av3">SM</div>
+          <h4>Saad Mohammad</h4>
+          <p>PRN: 1032231877</p>
+          <div class="prn">📞 8530566212</div>
+        </div>
+        <div class="tcard2 reveal delay-3">
+          <div class="avatar av4">SB</div>
+          <h4>Swayam Bhosale</h4>
+          <p>PRN: 1032231850</p>
+          <div class="prn">📞 7498628676</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ CTA ════════ -->
+  <section class="cta-section">
+    <div class="cta-glow"></div>
+    <div class="cta-inner">
+      <div class="section-tag" style="color:var(--gold2);text-align:center;">Get Started</div>
+      <h2>Justice is a right,<br>not a privilege.</h2>
+      <p class="section-sub">NyayaSetu bridges the gap between complex legal systems and everyday citizens. Your legal
+        journey starts here.</p>
+      <div class="cta-btns">
+        <a href="query.html" class="cta-primary">Submit a Legal Query →</a>
+        <a href="awareness.html" class="cta-outline">Legal Awareness ↗</a>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- ════════ FOOTER ════════ -->
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <div class="logo" style="margin-bottom:0.75rem;">
+          <div class="logo-icon">N</div>
+          <div class="logo-text">Nyaya<span>Setu</span></div>
+        </div>
+        <p class="footer-tagline">A Digital Legal Awareness & Assistance Portal · Dept. of Computer Engineering &
+          Technology · MIT-WPU, Pune</p>
+      </div>
+      <ul class="footer-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how">How It Works</a></li>
+        <li><a href="#roles">Roles</a></li>
+        <li><a href="#tech">Tech Stack</a></li>
+        <li><a href="#team">Team</a></li>
+      </ul>
+      <p class="footer-copy">© 2025 NyayaSetu · CSE3PM07A Mini Project</p>
+    </div>
+  </footer>
+
+  <button id="chatbotFab" class="chatbot-fab" aria-label="Open NyayaBot" aria-expanded="false">💬</button>
+
+  <div id="chatbotOverlay" class="chatbot-overlay" aria-hidden="true"></div>
+
+  <section id="chatbotPanel" class="chatbot-panel" aria-label="NyayaBot chatbot" aria-modal="true" role="dialog">
+    <div class="chatbot-header">
+      <div class="chatbot-avatar">👩‍⚖️</div>
+      <div class="chatbot-header-text">
+        <div class="chatbot-title">NyayaBot</div>
+        <div class="chatbot-subtitle">AI Legal Assistant · Indian Law</div>
+      </div>
+      <div class="chatbot-status">
+        <div class="status-dot"></div>
+        <span>Online</span>
+      </div>
+      <button id="chatbotClose" class="chatbot-close" aria-label="Close chatbot">✕</button>
+    </div>
+    <div id="chatbotMessages" class="chatbot-messages"></div>
+    <div class="chatbot-input-wrap">
+      <div class="chatbot-input-row">
+        <input id="chatbotInput" type="text" placeholder="Describe your legal issue…" autocomplete="off"
+          maxlength="2100" />
+        <button id="chatbotSend" class="chatbot-send" type="button">Send ➤</button>
+      </div>
+      <div id="chatbotCharCount" class="chatbot-char-count"></div>
+    </div>
+  </section>
+
+
+
+  <script>
+    // Scroll-spy nav
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.12 });
+    reveals.forEach(el => observer.observe(el));
+
+    // Auth-aware nav buttons
+    (function renderNavBtns() {
+      const btns = document.getElementById('navBtns');
+      if (!btns) return;
+      if (Auth.isLoggedIn()) {
+        const user = Auth.getUser();
+        const roleColor = { admin: '#e74c3c', lawyer: '#2980b9', user: '#27ae60' };
+        const color = roleColor[user.role] || '#888';
+        btns.innerHTML = `
+        <span style="color:rgba(255,255,255,0.75);font-size:13px;">
+          ${user.name.split(' ')[0]}
+          <span style="background:${color};color:#fff;font-size:10px;font-weight:700;
+            padding:2px 7px;border-radius:20px;margin-left:5px;text-transform:uppercase;">
+            ${user.role}
+          </span>
+        </span>
+        <a href="javascript:void(0)" class="btn-login" onclick="Auth.redirectByRole('${user.role}')">My Dashboard</a>
+        <button class="btn-signup" onclick="Auth.logout()" style="border:none;cursor:pointer;">Logout</button>
+      `;
+      } else {
+        btns.innerHTML = `
+        <a href="login.html" class="btn-login">Login</a>
+        <a href="login.html" class="btn-signup">Get Started →</a>
+      `;
+      }
+    })();
+  </script>
+  <script src="chatbot.js"></script>
+</body>
+
+</html>

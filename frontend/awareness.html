@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Learn about your legal rights under Indian law. NyayaSetu covers Property, Cyber Crime, Consumer Protection, Family Law, Employment Law, and Criminal Law.">
+<title>NyayaSetu | Legal Awareness Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="chatbot.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;}
+:root{
+  --navy:#0a1628;--navy2:#0e1f3a;
+  --gold:#c9992a;--gold2:#f0c040;
+  --cream:#f5f0e8;--cream2:#ede6d8;
+  --text:#1a2540;--muted:#6b7a99;--white:#ffffff;
+  --border:rgba(201,153,42,0.2);
+}
+html{scroll-behavior:smooth;}
+body{margin:0;font-family:'Outfit',sans-serif;background:var(--cream);color:var(--text);}
+
+/* ── NAV ── */
+nav{
+  background:var(--navy);padding:1rem 3.5rem;
+  display:flex;justify-content:space-between;align-items:center;
+  position:sticky;top:0;z-index:100;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.logo{display:flex;align-items:center;gap:10px;color:white;text-decoration:none;}
+.logo-icon{background:var(--gold);width:36px;height:36px;border-radius:8px;display:grid;place-items:center;font-weight:700;font-family:'Playfair Display';font-size:1rem;color:var(--navy);}
+.logo-text{font-family:'Playfair Display';font-size:1.2rem;color:var(--white);}
+.logo-text span{color:var(--gold2);}
+.nav-links{display:flex;gap:1.6rem;list-style:none;margin:0;padding:0;}
+.nav-links a{color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.875rem;transition:color 0.2s;}
+.nav-links a:hover,.nav-links a.active{color:var(--gold2);}
+@media(max-width:768px){.nav-links{display:none;}nav{padding:1rem 1.5rem;}}
+
+/* ── PAGE HEADER ── */
+.page-header{
+  background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);
+  color:white;padding:5rem 3.5rem 4rem;text-align:center;
+  position:relative;overflow:hidden;
+}
+.page-header::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 80% at 50% 0%,rgba(201,153,42,0.1) 0%,transparent 70%);
+}
+.page-header h1{font-family:'Playfair Display';font-size:clamp(2rem,4vw,2.8rem);margin:0 0 0.75rem;position:relative;}
+.page-header p{color:rgba(255,255,255,0.55);margin:0 auto;max-width:580px;font-size:1rem;line-height:1.8;position:relative;}
+
+/* ── GRID SECTION ── */
+.section{padding:4rem 3.5rem;max-width:1200px;margin:0 auto;}
+@media(max-width:768px){.section{padding:3rem 1.5rem;}}
+
+.section-title{
+  font-family:'Playfair Display';font-size:2rem;
+  color:var(--navy);margin:0 0 2.5rem;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:1.5rem;
+}
+
+/* ── CARDS ── */
+.card{
+  background:var(--white);border-radius:18px;padding:1.8rem;
+  border:1px solid var(--cream2);
+  transition:transform 0.28s ease,border-color 0.28s ease,box-shadow 0.28s ease;
+  cursor:pointer;
+}
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 20px 44px rgba(10,22,40,0.1);
+  border-color:var(--gold);
+}
+.card-icon{
+  width:56px;height:56px;border-radius:14px;
+  display:grid;place-items:center;font-size:1.6rem;
+  margin-bottom:1.1rem;
+  background:rgba(201,153,42,0.12);
+}
+.card h3{margin:0 0 0.6rem;font-size:1.05rem;font-weight:700;color:var(--navy);}
+.card p{color:var(--muted);font-size:0.875rem;line-height:1.65;margin:0 0 1.1rem;}
+
+.learn-btn{
+  display:inline-flex;align-items:center;gap:0.4rem;
+  padding:0.5rem 1.1rem;border-radius:8px;
+  background:var(--gold);color:var(--navy);
+  font-weight:700;font-size:0.85rem;border:none;cursor:pointer;
+  font-family:'Outfit';transition:background 0.2s,transform 0.15s;
+}
+.learn-btn:hover{background:var(--gold2);transform:translateY(-1px);}
+
+/* ── HELPLINE SECTION ── */
+.helplines{
+  background:var(--navy2);padding:4rem 3.5rem;
+}
+.helplines-inner{max-width:1200px;margin:0 auto;}
+.helplines h2{font-family:'Playfair Display';font-size:1.8rem;color:var(--white);margin:0 0 0.5rem;}
+.helplines p{color:rgba(255,255,255,0.5);margin:0 0 2rem;font-size:0.9rem;}
+.helpline-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;}
+.helpline-card{
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px;padding:1.2rem 1.4rem;transition:border-color 0.2s;
+}
+.helpline-card:hover{border-color:rgba(201,153,42,0.3);}
+.helpline-name{font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gold2);margin-bottom:0.3rem;}
+.helpline-num{font-family:'Playfair Display';font-size:1.35rem;font-weight:700;color:var(--white);margin-bottom:0.2rem;}
+.helpline-desc{font-size:0.78rem;color:rgba(255,255,255,0.4);}
+@media(max-width:768px){.helplines{padding:3rem 1.5rem;}}
+
+/* ── MODAL ── */
+.modal{
+  display:none;position:fixed;z-index:1000;inset:0;
+  background:rgba(10,22,40,0.65);backdrop-filter:blur(4px);
+  align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto;
+}
+.modal.open{display:flex;}
+.modal-content{
+  background:var(--white);margin:auto;padding:2.5rem;
+  width:min(680px,100%);border-radius:20px;
+  box-shadow:0 32px 80px rgba(10,22,40,0.3);
+  position:relative;animation:modalIn 0.28s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes modalIn{from{opacity:0;transform:scale(0.95) translateY(12px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.modal-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;gap:1rem;}
+.modal-icon{font-size:2rem;line-height:1;}
+.modal-title-wrap{flex:1;}
+.modal-title{font-family:'Playfair Display';font-size:1.5rem;color:var(--navy);margin:0;}
+.modal-subtitle{font-size:0.8rem;color:var(--muted);margin-top:0.2rem;}
+.modal-close{
+  width:36px;height:36px;background:var(--cream2);border:none;border-radius:10px;
+  cursor:pointer;font-size:1.1rem;display:grid;place-items:center;
+  transition:background 0.18s,transform 0.15s;flex-shrink:0;color:var(--text);
+}
+.modal-close:hover{background:var(--cream);transform:scale(1.08);}
+.modal-body ul{
+  margin:0;padding-left:1.4rem;
+  display:flex;flex-direction:column;gap:0.7rem;
+}
+.modal-body li{font-size:0.9rem;color:var(--text);line-height:1.6;}
+.modal-body li b{color:var(--navy);}
+.modal-divider{
+  margin:1.5rem 0;font-size:0.78rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;color:var(--muted);
+  display:flex;align-items:center;gap:0.75rem;
+}
+.modal-divider::before,.modal-divider::after{content:'';flex:1;height:1px;background:var(--cream2);}
+.modal-cta{
+  margin-top:1.5rem;display:flex;gap:0.75rem;flex-wrap:wrap;
+}
+.modal-cta a,.modal-cta button{
+  display:inline-flex;align-items:center;gap:0.4rem;
+  padding:0.6rem 1.2rem;border-radius:9px;font-size:0.875rem;font-weight:600;
+  text-decoration:none;transition:all 0.2s;font-family:'Outfit';cursor:pointer;
+}
+.btn-gold{background:var(--gold);color:var(--navy);border:none;}
+.btn-gold:hover{background:var(--gold2);transform:translateY(-1px);}
+.btn-outline{background:transparent;color:var(--navy);border:1.5px solid var(--cream2);}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold);}
+</style>
+</head>
+<body>
+
+<script src="auth.js"></script>
+<script>Auth.requireAuth(["user","lawyer","admin"]);</script>
+
+<nav>
+  <a href="nyayasetu.html" class="logo">
+    <div class="logo-icon">N</div>
+    <div class="logo-text">Nyaya<span>Setu</span></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="nyayasetu.html">Home</a></li>
+    <li><a href="awareness.html" class="active">Legal Awareness</a></li>
+    <li><a href="query.html">Submit Query</a></li>
+    <li><a href="document.html">Analyze Document</a></li>
+    <li><a href="lawyers.html">Find a Lawyer</a></li>
+    <li><a href="dashboard.html">Dashboard</a></li>
+  </ul>
+  <div id="userChip" style="display:flex;align-items:center;gap:10px;"></div>
+</nav>
+
+<div class="page-header">
+  <h1>Legal Awareness Portal</h1>
+  <p>Understand your rights and legal protections through simplified guidance.
+     NyayaSetu organizes key Indian laws so citizens can quickly navigate what applies to them.</p>
+</div>
+
+<section class="section">
+  <h2 class="section-title">Legal Categories</h2>
+  <div class="grid">
+
+    <div class="card" onclick="openModal('property')">
+      <div class="card-icon">🏠</div>
+      <h3>Property Law</h3>
+      <p>Tenant rights, rental agreements, security deposits, eviction procedures, and real estate transactions.</p>
+      <button class="learn-btn">Learn More →</button>
+    </div>
+
+    <div class="card" onclick="openModal('cyber')">
+      <div class="card-icon">💻</div>
+      <h3>Cyber Crime</h3>
+      <p>Digital fraud, identity theft, online harassment, hacking, and how to report cybercrime in India.</p>
+      <button class="learn-btn">Learn More →</button>
+    </div>
+
+    <div class="card" onclick="openModal('consumer')">
+      <div class="card-icon">🛒</div>
+      <h3>Consumer Protection</h3>
+      <p>Your rights against defective products, fraudulent sellers, mis-selling, and refund disputes.</p>
+      <button class="learn-btn">Learn More →</button>
+    </div>
+
+    <div class="card" onclick="openModal('family')">
+      <div class="card-icon">👨‍👩‍👧</div>
+      <h3>Family Law</h3>
+      <p>Marriage, divorce, domestic violence protection, child custody, adoption, and inheritance rights.</p>
+      <button class="learn-btn">Learn More →</button>
+    </div>
+
+    <div class="card" onclick="openModal('employment')">
+      <div class="card-icon">🏢</div>
+      <h3>Employment Law</h3>
+      <p>Workplace harassment, salary disputes, wrongful termination, PF, and employee legal protections.</p>
+      <button class="learn-btn">Learn More →</button>
+    </div>
+
+    <div class="card" onclick="openModal('criminal')">
+      <div class="card-icon">🚓</div>
+      <h3>Criminal Law</h3>
+      <p>FIR filing, arrest rights, bail, criminal procedures, and your fundamental rights with police.</p>
+      <button class="learn-btn">Learn More →</button>
+    </div>
+
+  </div>
+</section>
+
+<!-- Helplines Section -->
+<section class="helplines">
+  <div class="helplines-inner">
+    <h2>Legal Aid Helplines</h2>
+    <p>Free legal assistance available 24/7 through these official Indian government channels.</p>
+    <div class="helpline-grid">
+      <div class="helpline-card">
+        <div class="helpline-name">National Legal Aid</div>
+        <div class="helpline-num">15100</div>
+        <div class="helpline-desc">NALSA — Free legal services for all citizens</div>
+      </div>
+      <div class="helpline-card">
+        <div class="helpline-name">Women Helpline</div>
+        <div class="helpline-num">181</div>
+        <div class="helpline-desc">Ministry of WCD — 24/7 women distress helpline</div>
+      </div>
+      <div class="helpline-card">
+        <div class="helpline-name">Cyber Crime</div>
+        <div class="helpline-num">1930</div>
+        <div class="helpline-desc">Report online financial fraud — MHA</div>
+      </div>
+      <div class="helpline-card">
+        <div class="helpline-name">Consumer Helpline</div>
+        <div class="helpline-num">1800-11-4000</div>
+        <div class="helpline-desc">National Consumer Helpline — free grievance</div>
+      </div>
+      <div class="helpline-card">
+        <div class="helpline-name">Labour Helpline</div>
+        <div class="helpline-num">1800-11-6888</div>
+        <div class="helpline-desc">Ministry of Labour — worker grievances</div>
+      </div>
+      <div class="helpline-card">
+        <div class="helpline-name">Emergency</div>
+        <div class="helpline-num">112</div>
+        <div class="helpline-desc">Police, fire, ambulance — all emergencies</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── MODAL ── -->
+<div id="lawModal" class="modal" onclick="handleModalBackdrop(event)">
+  <div class="modal-content" id="modalContent">
+    <div class="modal-header">
+      <div class="modal-icon" id="modalIcon"></div>
+      <div class="modal-title-wrap">
+        <h2 class="modal-title" id="modalTitle"></h2>
+        <p class="modal-subtitle" id="modalSubtitle"></p>
+      </div>
+      <button class="modal-close" onclick="closeModal()" aria-label="Close modal">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-cta" id="modalCta"></div>
+  </div>
+</div>
+
+<script>
+Auth.renderUserChip();
+// ── Modal data ────────────────────────────────────────────────────────────────
+const MODAL_DATA = {
+  property: {
+    icon: "🏠", title: "Property Law",
+    subtitle: "Tenant rights, real estate, land disputes",
+    laws: [
+      { name:"Transfer of Property Act", desc:"Governs transfer of property — sale, lease, mortgage, gift." },
+      { name:"Registration Act", desc:"Mandatory registration of property documents at the sub-registrar office." },
+      { name:"Indian Stamp Act", desc:"Payment of stamp duty on property transactions." },
+      { name:"RERA (Real Estate Act)", desc:"Protects homebuyers and regulates builders and developers." },
+      { name:"Land Acquisition Act", desc:"Acquisition of land by government with compensation." },
+      { name:"Benami Transactions Prohibition Act", desc:"Prohibits property held in someone else's name." },
+      { name:"Easements Act", desc:"Rights over another's property, including right of way." },
+      { name:"Partition Act", desc:"Division of jointly owned property among co-owners." },
+      { name:"Specific Relief Act", desc:"Court-ordered legal remedies in property disputes." },
+      { name:"Hindu Succession Act", desc:"Property inheritance rights for Hindu families." },
+    ],
+    cta: [
+      { label:"Submit Property Query →", href:"query.html", primary:true },
+      { label:"Analyze Rental Agreement", href:"document.html", primary:false },
+    ]
+  },
+  cyber: {
+    icon: "💻", title: "Cyber Crime Law",
+    subtitle: "Digital fraud, hacking, online harassment",
+    laws: [
+      { name:"Information Technology Act, 2000", desc:"Primary law covering hacking, data theft, cyber fraud, and digital signatures." },
+      { name:"IT Amendment Act, 2008", desc:"Strengthens cyber security provisions and electronic governance." },
+      { name:"Indian Penal Code (relevant sections)", desc:"Covers fraud, identity theft, defamation applied alongside the IT Act." },
+      { name:"Indian Evidence Act", desc:"Recognizes electronic records as valid legal evidence in court." },
+      { name:"Digital Personal Data Protection Act, 2023", desc:"Protects personal data rights and privacy of Indian citizens." },
+      { name:"CERT-In Guidelines", desc:"Mandatory rules for reporting cyber incidents and handling data breaches." },
+      { name:"Companies Act (data provisions)", desc:"Corporate cyber security and data protection responsibilities." },
+    ],
+    cta: [
+      { label:"Report Cyber Crime →", href:"https://cybercrime.gov.in", primary:true, external:true },
+      { label:"Submit Cyber Query", href:"query.html", primary:false },
+    ]
+  },
+  consumer: {
+    icon: "🛒", title: "Consumer Protection Law",
+    subtitle: "Defective goods, fraud sellers, refunds",
+    laws: [
+      { name:"Consumer Protection Act, 2019", desc:"Comprehensive protection from unfair trade practices with district, state, and national consumer forums." },
+      { name:"Legal Metrology Act", desc:"Ensures correct weights, measures, and labeling of goods sold." },
+      { name:"Bureau of Indian Standards Act", desc:"Quality certification (ISI mark) standards for products." },
+      { name:"Food Safety and Standards Act", desc:"Regulates food quality, safety standards, and hygiene." },
+      { name:"Essential Commodities Act", desc:"Prevents hoarding and black marketing of essential goods." },
+      { name:"Competition Act", desc:"Prevents unfair competition, cartels, and monopolies." },
+      { name:"Sale of Goods Act", desc:"Governs rights and obligations in sale and purchase of goods." },
+      { name:"Information Technology Act", desc:"Covers e-commerce transactions and online consumer fraud." },
+    ],
+    cta: [
+      { label:"File Consumer Complaint →", href:"https://consumerhelpline.gov.in", primary:true, external:true },
+      { label:"Submit Query", href:"query.html", primary:false },
+    ]
+  },
+  family: {
+    icon: "👨‍👩‍👧", title: "Family Law",
+    subtitle: "Marriage, divorce, custody, domestic violence",
+    laws: [
+      { name:"Hindu Marriage Act", desc:"Marriage, divorce, and related rights for Hindus, Buddhists, Sikhs, and Jains." },
+      { name:"Hindu Succession Act", desc:"Property and inheritance rights within Hindu families." },
+      { name:"Hindu Adoption and Maintenance Act", desc:"Rules for adoption and maintenance obligations." },
+      { name:"Muslim Personal Law (Shariat)", desc:"Marriage, divorce, and inheritance for Muslim citizens." },
+      { name:"Dissolution of Muslim Marriages Act", desc:"Divorce rights specifically for Muslim women." },
+      { name:"Special Marriage Act", desc:"Interfaith and civil marriages — available to all citizens." },
+      { name:"Guardians and Wards Act", desc:"Court-ordered guardianship of children in dispute cases." },
+      { name:"Protection of Women from Domestic Violence Act", desc:"Protection orders, residence orders, and monetary relief against domestic abuse." },
+      { name:"Dowry Prohibition Act", desc:"Prohibits giving or receiving dowry — both criminal offence." },
+      { name:"POCSO Act", desc:"Protection of children from sexual offences." },
+    ],
+    cta: [
+      { label:"Submit Family Law Query →", href:"query.html", primary:true },
+      { label:"Women Helpline: 181", href:"tel:181", primary:false },
+    ]
+  },
+  employment: {
+    icon: "🏢", title: "Employment Law",
+    subtitle: "Salary, termination, workplace rights",
+    laws: [
+      { name:"Industrial Disputes Act", desc:"Resolves disputes between employers and employees, including wrongful termination." },
+      { name:"Minimum Wages Act", desc:"Ensures workers are paid at least the government-mandated minimum wage." },
+      { name:"Payment of Wages Act", desc:"Regulates timely payment and prevents unauthorized deductions." },
+      { name:"Employees Provident Fund Act", desc:"Mandatory retirement savings and social security for employees." },
+      { name:"Employees State Insurance Act", desc:"Health insurance and medical benefits for workers." },
+      { name:"Payment of Bonus Act", desc:"Entitlement to annual bonus based on employer profits." },
+      { name:"Payment of Gratuity Act", desc:"Lump sum payment after 5+ years of continuous service." },
+      { name:"Factories Act", desc:"Safety, health, and working conditions in manufacturing units." },
+      { name:"Maternity Benefit Act", desc:"26 weeks paid maternity leave and benefits for women employees." },
+      { name:"POSH Act (Sexual Harassment)", desc:"Mandatory ICC, protection from workplace harassment, and 90-day inquiry process." },
+      { name:"Child Labour Prohibition Act", desc:"Restricts employment of children in hazardous occupations." },
+      { name:"Shops and Establishments Act", desc:"Regulates working conditions, hours, and leave in shops and offices." },
+    ],
+    cta: [
+      { label:"Submit Labour Query →", href:"query.html", primary:true },
+      { label:"Labour Helpline: 1800-11-6888", href:"tel:18001166888", primary:false },
+    ]
+  },
+  criminal: {
+    icon: "🚓", title: "Criminal Law",
+    subtitle: "FIR, arrest rights, bail, court process",
+    laws: [
+      { name:"Indian Penal Code (IPC) / BNS", desc:"Defines criminal offences and corresponding punishments." },
+      { name:"Code of Criminal Procedure (CrPC) / BNSS", desc:"Governs investigation, arrest, trial, and appeal procedures." },
+      { name:"Indian Evidence Act / BSA", desc:"Rules of admissible evidence in criminal court proceedings." },
+      { name:"Prevention of Corruption Act", desc:"Deals with bribery and corruption by public servants." },
+      { name:"NDPS Act", desc:"Narcotic Drugs and Psychotropic Substances — drug-related crimes and penalties." },
+      { name:"Protection of Children from Sexual Offences (POCSO)", desc:"Strict protection and fast-track trials for crimes against children." },
+      { name:"Juvenile Justice Act", desc:"Special procedures for cases involving minors as accused or victims." },
+      { name:"Unlawful Activities Prevention Act (UAPA)", desc:"Terrorism-related offences and national security matters." },
+      { name:"SC/ST Prevention of Atrocities Act", desc:"Protection of Scheduled Caste and Scheduled Tribe communities." },
+      { name:"Motor Vehicles Act", desc:"Traffic violations, accident compensation, and vehicle-related offences." },
+    ],
+    cta: [
+      { label:"Submit Criminal Query →", href:"query.html", primary:true },
+      { label:"Emergency: 112", href:"tel:112", primary:false },
+    ]
+  }
+};
+
+// ── Open/close modal ──────────────────────────────────────────────────────────
+function openModal(type) {
+  const data = MODAL_DATA[type];
+  if (!data) return;
+
+  document.getElementById("modalIcon").textContent   = data.icon;
+  document.getElementById("modalTitle").textContent  = data.title;
+  document.getElementById("modalSubtitle").textContent = data.subtitle;
+
+  document.getElementById("modalBody").innerHTML = `<ul>
+    ${data.laws.map(l => `<li><b>${l.name}</b> — ${l.desc}</li>`).join("")}
+  </ul>`;
+
+  document.getElementById("modalCta").innerHTML = data.cta.map(btn => {
+    const cls  = btn.primary ? "btn-gold" : "btn-outline";
+    const ext  = btn.external ? ' target="_blank" rel="noopener"' : "";
+    return `<a href="${btn.href}" class="${cls}"${ext}>${btn.label}</a>`;
+  }).join("");
+
+  const modal = document.getElementById("lawModal");
+  modal.classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function closeModal() {
+  document.getElementById("lawModal").classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+function handleModalBackdrop(e) {
+  if (e.target === document.getElementById("lawModal")) closeModal();
+}
+
+// Close on Escape key
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+</script>
+
+<!-- NyayaBot Chatbot -->
+<button id="chatbotFab" class="chatbot-fab" aria-label="Open NyayaBot" aria-expanded="false">💬</button>
+<div id="chatbotOverlay" class="chatbot-overlay" aria-hidden="true"></div>
+<section id="chatbotPanel" class="chatbot-panel" aria-label="NyayaBot chatbot" aria-modal="true" role="dialog">
+  <div class="chatbot-header">
+    <div class="chatbot-avatar">👩‍⚖️</div>
+    <div class="chatbot-header-text">
+      <div class="chatbot-title">NyayaBot</div>
+      <div class="chatbot-subtitle">AI Legal Assistant · Indian Law</div>
+    </div>
+    <div class="chatbot-status"><div class="status-dot"></div><span>Online</span></div>
+    <button id="chatbotClose" class="chatbot-close" aria-label="Close chatbot">✕</button>
+  </div>
+  <div id="chatbotMessages" class="chatbot-messages"></div>
+  <div class="chatbot-input-wrap">
+    <div class="chatbot-input-row">
+      <input id="chatbotInput" type="text" placeholder="Ask about any law or your rights…" autocomplete="off" maxlength="2100"/>
+      <button id="chatbotSend" class="chatbot-send" type="button">Send ➤</button>
+    </div>
+    <div id="chatbotCharCount" class="chatbot-char-count"></div>
+  </div>
+</section>
+<script src="chatbot.js"></script>
+
+</body>
+</html>
